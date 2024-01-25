@@ -43,36 +43,36 @@ void Pop() {
 ## 链表模拟
 使用单链表`queue`存储元素，单链表的头部为队首，尾部为队尾，给单链表额外设置一个尾指针，通过单链表在头、尾部的删除、插入实现队列的操作
 # 队列的基本操作
-双链表的操作参见链表章节，此处使用数组实现各基本操作
+单链表的操作参见链表章节，此处使用数组实现各基本操作
 ```cpp
 // 判定队列是否为空
-bool IsEmpty() {
-    return front == rear;
-}
+front == rear;
 // 清空队列
-void Clear() {
-    front = 0;
-    rear = 0;
-}
+front = 0;
+rear = 0;
 // 获取队列中元素的个数
-int Size() {
-    return rear - front;
-}
+rear - front;
 // 获取队首元素
-int GetFront() {
-    return queue[front + 1];
-}
+queue[front + 1];
 // 元素入队
-void Push(int x) {
-    queue[++rear] = x;
-}
+queue[++rear] = x;
 // 元素出队
-void Pop() {
-    ++front;
-}
+++front;
 ```
 # 循环队列
-
+由于队列的首尾指针都只有 + 运算，因此在不断入队、出队的过程中，空间会逐渐变小，当判断到队满时可能还有空间可以存储元素，这种现象称为 “假溢出”，循环队列可以解决假溢出的问题
+## 循环队列的基本操作
+```cpp
+// 入队
+rear = (rear + 1) % N;
+queue[rear] = x;
+// 出队
+front = (front + 1) % N;
+// 判断队列为满
+(rear + 1) % N = front;
+// 获取元素数量
+(rear - front + N) % N;
+```
 ### 双端队列
 deque
 ### 单调队列
