@@ -1,0 +1,294 @@
+## 组合数学
+### 容斥原理
+
+## 初等数论
+### 算术基本定理
+若 $n > 1, n \in \mathbb{N}$，则 $n$ 可通过以下方式唯一分解：
+$$\large n = \sum\limits_{i=1}^kp_i^{a_i}$$
+其中 $p_i$ 为素数，且 $p_1 < p_2 < \dots < p_k,\ a_i \in \mathbb{N}^+$
+
+例：质因数分解
+```cpp
+#include <iostream>
+int main() {
+    int n = 13548932;
+    for (int i = 2; n != 1; ) {
+        if (n % i == 0) {
+            std::cout << i << " ";
+            n /= i;
+        } else {
+            i++;
+        }
+    }
+}
+// 输出 2 2 17 23 8663
+```  
+### 最大公约数和最小公倍数
+最小公倍数可以通过最大公约数求得：
+$$\large lcm(a, b) = \frac{a \times b}{gcd(a, b)} = \frac{a}{gcd(a, b)} \times b$$
+因此主要研究最大公约数
+
+代码实现：
+```cpp
+int lcm(int a, int b) {
+    return a / gcd(a, b) * b;
+}
+```
+基本原理：
+
+$(1)$ 当一个数为 $0$ 时，最大公约数是另外一个数
+$$\large gcd(a, 0) = a \text{}$$
+$$\large gcd(0, b) = b \text{}$$
+$(2)$ 当一个数 $b$ 能整除另一个数 $a$ 时，最大公约数是 $b$
+$$\large gcd(a, b) = b \quad (b|a)$$
+
+最大公约数算法：
+
+第 $1$ 种：欧几里得算法 ( 辗转相除法 )
+
+时间复杂度：$O(logn)$
+
+原理：
+
+
+$$\large gcd(a, b) = gcd(b, a \% b)$$
+此处不需要考虑 $a$ 和 $b$ 谁大，若 $a < b$，则 $a \% b = a$, 那么 $gcd(a, b) = gcd(b, a\%b) = gcd(b, a)$ ，自动把大的放到了前面
+
+代码实现：
+```cpp
+//此处只考虑正整数
+int gcd(int a, int b) {
+    if (b == 0) {
+        return a;
+    }
+    if (a % b == 0) {
+        return b;
+    } 
+    return gcd(b, a % b);
+}
+```
+
+第 $2$ 种：$\text{Stein}$ 算法 $\text{(}$二进制 $\text{gcd)}$
+
+时间复杂度：$O(logn)$
+
+原理：
+$$\large gcd(a, b) = 2 \times gcd(\frac{a}{2}, \frac{b}{2}) \quad (a, b \,\text{都是偶数})$$
+$$\large gcd(a, b) = gcd(\frac{a}{2}, b) \quad (a\,\text{是偶数}, b\,\text{是奇数})$$
+$$\large gcd(a, b) = gcd(a, \frac{b}{2}) \quad (a\,\text{是奇数}, b\,\text{是偶数})$$
+$$\large gcd(a, b) = gcd(|a - b|, min(a, b)) \quad (a, b\,\text{都是奇数})$$
+代码实现：
+
+其中 $\text{std::countr\_zero()}$ 函数定义在头文件 $\text{<bit>}$ 中 $\text{(C++20}$ 以上可用$\text{)}$，用于计算一个无符号整数的后省 $0$ 个数，$\text{std::min()}$ 函数定义在头文件 $\text{<algorithm>}$ 中
+```cpp
+int bin_gcd(uint32_t a, uint32_t b) {
+    if (a == 0U) {
+        return b;
+    }
+    if (b == 0U) {
+        return a;
+    }
+    const auto i = std::countr_zero(a);
+    a >>= i;
+    const auto j = std::countr_zero(b);
+    b >>= j;
+    //后省0的个数代表一个数除以多少次2后会变为奇数，此处要将a, b都变为奇数
+    const auto k = std::min(i, j);
+    //k代表a, b能够同时除以多少次2，除以k次2也就是除以了a, b的最大偶数公约数
+    while (true) {//a, b都为奇数的情况，根据原理最后一条，计算得到最大公约数
+        if (a > b) {
+            int temp = a;
+            a = b;
+            b = temp;
+        }
+        b -= a;
+        if (b == 0) {
+            return a << k;
+            //此时a是最大奇数公因数，将a乘上之前除掉的最大偶数公约数，即为最终的最大公因数
+        }
+        b >>= std::countr_zero(b);
+        //若b != 0，两奇数相减结果必为偶数，因此要再把所有的2除掉
+    }
+}
+```
+以上为标准库实现，在能够调用 $\text{std::countr\_zero()}$ 的版本可以直接调用 $\text{std::gcd()}$ ，其他版本可以自行实现 $\text{std::countr\_zero()}$：
+```cpp
+int trailing_zeros(uint32_t n) {
+    int cnt = 0;
+    while (n & 1 == 0) {
+        n >> 1;
+        cnt++;
+    }
+    return cnt;
+}
+```
+
+递归实现：
+
+其中 $\text{std::abs()}$ 函数定义在头文件 $\text{<cmath>}$ 中，$\text{std::min()}$ 函数定义在头文件 $\text{<algorithm>}$ 中
+
+```cpp
+//递归实现
+int bin_gcd(int a, int b) {
+    if (b == 0) {
+        return a;
+    }
+    if (a & 1 == 0 && b & 1 == 0) {
+        return bin_gcd(a >> 1, b >> 1) << 1;
+    }
+    if (a & 1 == 0 && b & 1 == 1) {
+        return bin_gcd(a >> 1, b);
+    }
+    if (a & 1 == 1 && b & 1 == 0) {
+        return bin_gcd(a, b >> 1);
+    }
+    return bin_gcd(std::abs(a - b), std::min(a, b));
+}
+```
+
+$\text{C++17}$ 开始，可以从标准库调用 $\text{std::gcd()}$ 函数和 $\text{std::lcm()}$ 函数，这两个函数定义在头文件$\text{<numeric>}$中：
+```cpp
+#include <iostream>
+#include <numeric>
+int main() {
+    int a = 60, b = 150;
+    cout << std::gcd(60, 150) << " " << std::lcm(60, 150);
+}
+```
+### 素数检测算法
+- 试除法
+
+时间复杂度：$O(\sqrt{n})$， 对于 $long\,long$ 类型较大的数据运算时间会超过 $1s$
+
+原理：若正整数 $n$ 为合数，则除了 $1$ 和 $n$ 以外， $n$ 至少还有 $2$ 个因子，即：
+$$\large n = a \times b \quad (1 < a \le b < n)$$
+从而可以得出其中较小的因子 $a$ 和 $n$ 的关系：
+$$\large 2 \le a \le \sqrt{n}$$
+因此只需要判断正整数 $n$ 是否包含因子 $a$ ，即可判断 $n$ 是否为素数，做法就是用 $2 \le i \le \sqrt{n}$ 的所有正整数 $i$ 对 $n$ 试除，判断 $i$ 是否能整除 $n$
+
+代码实现：
+```cpp
+bool IsPrime(int x) { 
+	if (x < 2) {//考虑1、0和负数，它们都不是素数 
+		return false;
+	}//也可以写 i <= sqrt(x); 但不能写 i * i <= x; 因为 i * i 可能会溢出
+    for (int i = 2; i <= x / i; i++) {
+		if (x % i == 0) { 
+			return false;
+		}
+	}
+	return true;
+}
+```
+
+第 $2$ 种：$\text{Miller-Rabin}$ 素性检验算法
+
+时间复杂度：$O(log^3n)$，对于 $long\,long$ 类型的数据不会超时
+
+代码实现：
+```cpp
+bool MillerRabin() {
+
+}
+```
+### 素数筛选算法
+
+## 快速幂算法
+```cpp
+std::uint64_t IntFastPow(std::uint64_t base, std::uint64_t exp) {
+    std::int64_t ans = 1;
+    while(exp > 0) {
+        if (exp % 2 == 1) {
+            ans *= base;
+        }
+        base *= base;
+        exp >>= 1;
+    }
+    return ans;
+}
+```
+## 高精度算法
+### 十进制浮点类型 decimal
+
+## 随机数
+```cpp
+std::random_device rd;
+std::mt19937 engine(rd());
+
+int GetRdInt(int start, int end) {
+    std::uniform_int_distribution<int> dist(start, end);
+    return dist(engine);
+}
+
+double GetRdDouble(double start, double end) {
+    std::uniform_real_distribution<double> dist(start, end);
+    return dist(engine);
+}
+```
+# 位运算
+```cpp
+void Swap(int& a, int& b)
+{
+    //如果a和b指向同一块内存则结果为0
+    a = a ^ b;
+    b = a ^ b;
+    a = a ^ b;
+}
+```
+取出一个整数n末尾的1，即保留n的补码最右侧的一位1，其他位为0：
+$$
+    \Large
+    n\,\&\,(\sim n + 1) 
+$$
+例1：n为负数
+$$
+\Large
+\begin{align*}
+    n &= 11110101 \quad \text{$-11$ 的补码}\\
+    \sim n &= 00001010 \quad \text{各位全部取反}\\
+    \sim n + 1 &= 00001011 \quad \text{取反后$+1$}\\
+    n\,\&\,(\sim n + 1) &= 00000001 \quad \text{取出末位 $1$}
+\end{align*}
+$$
+例2：n为正数
+$$
+\Large
+\begin{align*}
+    n &= 01011000 \quad \text{$88$ 的补码}\\
+    \sim n &= 10100111 \quad \text{各位全部取反}\\
+    \sim n + 1 &= 10101000 \quad \text{取反后$+1$}\\
+    n\,\&\,(\sim n + 1) &= 00001000 \quad \text{取出末位 $1$}
+\end{align*}
+$$
+```cpp
+#include <iostream>
+#include <cstdint>
+#include <bitset>
+int main() {
+    std::int8_t n1 = -11, n2 = 88;
+    std::bitset<8> bs1 = n1 & (~n1 + 1);
+    std::bitset<8> bs2 = n2 & (~n2 + 1);
+    std::cout << bs1 << ' ' << bs2;
+    //输出: 00000001 00001000
+}
+```
+## 判断回文数
+回文数定义：
+
+根据定义很容易知道，如果考虑负号，那么负数不是回文数，如果一个数以 0 结尾，那么它不是回文数，0 是唯一的例外
+
+如果一个数是回文数，那么它的右半边反转后应该等于左半边，因此我们可以基于这个思路编写算法
+```cpp
+bool IsPalindrome(std::int64_t x) {
+    if (x < 0 || (x % 10 == 0 && x != 0)) {
+        return false;
+    }
+    std::int64_t rightHalf = 0;
+    while (x > rightHalf) {
+        rightHalf = rightHalf * 10 + x % 10;
+        x /= 10;
+    }
+    return x == rightHalf || x == rightHalf / 10;
+}
+```
+# 博弈论
