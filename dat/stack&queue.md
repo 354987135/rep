@@ -8,30 +8,21 @@
 # 栈的基本操作
 单链表的操作参见链表章节，此处使用数组实现各基本操作
 ```cpp
-// 判定队列是否为空
-bool IsEmpty() {
-    return top == 0;
-}
-// 清空队列
-void Clear() {
-    top = 0;
-}
-// 获取队列中元素的个数
-int Size() {
-    return top;
-}
-// 获取队首元素
-int GetFront() {
-    return stack[top];
-}
-// 元素入队
-void Push(int x) {
-    stack[++top] = x;
-}
-// 元素出队
-void Pop() {
-    --top;
-}
+// 判定栈是否为空
+top == 0;
+// 判定栈满
+top == N;
+// 清空栈
+top = 0;
+// 获取栈中元素的个数
+top;
+// 获取栈顶元素
+stack[top - 1];
+// 元素入栈
+stack[top] = x;
+++top;
+// 元素出栈
+--top;
 ```
 # 单调栈
 
@@ -47,15 +38,18 @@ void Pop() {
 ```cpp
 // 判定队列是否为空
 front == rear;
+// 判断队列是否为满
+rear == N;
 // 清空队列
 front = 0;
 rear = 0;
 // 获取队列中元素的个数
 rear - front;
 // 获取队首元素
-queue[front + 1];
+queue[front];
 // 元素入队
-queue[++rear] = x;
+queue[rear] = x;
+++rear;
 // 元素出队
 ++front;
 ```
@@ -63,16 +57,30 @@ queue[++rear] = x;
 由于队列的首尾指针都只有 + 运算，因此在不断入队、出队的过程中，空间会逐渐变小，当判断到队满时可能还有空间可以存储元素，这种现象称为 “假溢出”，循环队列可以解决假溢出的问题
 ## 循环队列的基本操作
 ```cpp
+// 判断队空
+rear == front
+// 判断队列为满
+少用一个元素的存储空间，有N - 1个元素时就认为队满，判定条件如下
+(rear + 1) % N = front;
 // 入队
-rear = (rear + 1) % N;
 queue[rear] = x;
+rear = (rear + 1) % N;
 // 出队
 front = (front + 1) % N;
-// 判断队列为满
-(rear + 1) % N = front;
 // 获取元素数量
 (rear - front + N) % N;
+也可以额外设置一个变量 size 保存元素的数量
+
+size还可以用于判定循环队列是否为满 (size == N)
+而不需要再保留一个空位
 ```
-### 双端队列
-deque
 ### 单调队列
+
+### 双端队列
+可以在两端进行常数时间插入删除操作的线性表，相当于队列和栈的结合
+
+deque 容器
+
+https://en.cppreference.com/w/cpp/header/deque
+
+该容器还支持下标运算，随机存取
