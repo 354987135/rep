@@ -1,0 +1,130 @@
+# C++ 程序的编译运行过程
+## 预处理器
+### `#include`
+## 编译
+## 翻译单元
+## 链接器
+
+https://blog.csdn.net/qq_38410730/article/details/105517378
+
+https://cntransgroup.github.io/EffectiveModernCppChinese/Introduction.html
+# 类型推断
+auto 和 decltype
+### 值类别
+由于 NOI 全系列竞赛环境为 NOI Linux 2.0，并且使用 C++14 标准，因此只需要简单了解左值和左值引用的用法 ( 主要用于函数传参 )
+
+从 C++17 开始，每个表达式都是下列值类别中的一种：左值 ( lvalue )，亡值 ( xvalue )，纯右值 (prvalue)
+- 左值
+  
+左值是能够被左值引用绑定的表达式，通常来说左值是变量或函数的名字，或具有类似性质的表达式
+- 亡值
+
+当一个左值被转换为亡值时就已经触发移动语义，不论有没有将这个亡值绑定到右值引用上
+```cpp
+std::vector v{1, 3, 5};
+std::vector v2 = v;
+std::cout << (v.empty() ? "empty\n" : "not empty\n");
+// 输出 not empty
+std::vector v3 = std::move(v);
+std::cout << (v.empty() ? "empty\n" : "not empty\n");
+// 输出 empty
+```
+- 纯右值
+
+其中左值和亡值又称为泛左值 ( glvalue )，
+
+详尽的例子可以参考 cppreference：https://en.cppreference.com/w/cpp/language/value_category
+
+在难以确定表达式的值类别时，我们可以使用`decltype`关键字
+
+- 如果`decltype(表达式)`推断出`T&&`，那么该表达式为亡值
+
+- 如果`decltype(表达式)`推断出`T&`，那么该表达式为左值
+
+- 如果`decltype(表达式)`推断出`T`，那么该表达式为纯右值
+```cpp
+int n = 1;
+using T1 = decltype(std::move(n)); 
+// T1 是 T&& 类型，表达式 std::move(n) 是亡值
+
+using T2 = decltype((n)); 
+// T2 是 T& 类型，表达式 n 是左值
+
+using T3 = decltype((n + 1));
+// T3 是 T 类型，表达式 n + 1 是纯右值
+```
+### 引用的语法
+#### 左值引用
+类型`T`的左值引用记为`T&`，左值引用分为非 const 左值引用和 const 左值引用，非 const 左值引用只能绑定左值，const 左值引用可以绑定任意三种值类别的表达式，并且可以延长亡值的生命周期
+#### 右值引用
+`std::move()`做的事仅仅将表达式的值类别强制转换为亡值，类型变为对应类型的右值引用，并没有实际上的 "move" 操作
+#### 悬垂引用
+#### 引用折叠
+### 引用 (左值引用) 的概念和声明
+创建对一个对象的引用，就是给这个对象起了一个别名，对这个引用变量执行的操作相当于是对被引用变量本身执行的
+```cpp
+int a3 = 65;
+int& a3_ref = a3;
+std::cout << a3 << " " << a3_ref << "\n";
+//输出 65 65
+```
+和声明指针变量不同，声明引用变量时必须对它进行初始化，否则是编译错误
+```cpp
+// int& r3;
+//编译错误
+```
+和声明指针变量类似，使用逗号运算符连续声明引用类型的变量时，需要在每一个引用的变量名前面加上 $\&$ ，否则只有第一个变量才是引用类型
+```cpp
+int rr = 1;
+int& ref1 = rr, ref2 = rr;
+using ref1_T = decltype(p1);
+//using ref1_T = int &;
+using ref2_T = decltype(p2);
+//using ref2_T = int;
+```
+### 单向值传递和按引用传递 (双向值传递) 函数参数
+```cpp
+#include <iostream>
+
+int g_a = 5, g_b = 5;
+void g_f() {
+    g_a += g_b;
+}//使用全局变量避免传参，所有改动都会在原变量上生效
+
+void f(int a, int b) {
+    a += b;
+}//单向值传递，此处的a是原变量的拷贝，修改a的值不会改变原变量的值，如果不返回a，在函数调用结束后a就被释放
+
+struct A {
+    int A_n[5];
+};//占用5 * sizeof(int)个字节
+
+void add10(A A_obj) {
+    for (int i = 0; i < 5; i++) {
+        A_obj.A_n[i] += 10;
+    }
+}//单向值传递，原变量的值不会被修改
+
+void add20(A& A_obj) {
+    for (int i = 0; i < 5; i++) {
+        A_obj.A_n[i] += 20;
+    }
+}//双向值传递，可以修改原变量的值，通过引用传递参数，实际上传递的是变量的地址，但是不需要额外创建指针
+
+void print_struct(const A& A_obj) {
+    for (int i = 0; i < 5; i++) {
+        std::cout << A_obj.A_n[i] << " ";
+    }
+    std::cout << "\n";
+}//如果不需要修改变量，可以通过const引用传递参数，当编译器检测到对该变量的修改时会报错
+//按引用传递的好处：因为地址占8个字节，而传进去的结构体可能非常大(这个例子中是20个字节)，如果通过单向值传递，在复制变量时会浪费很多时间和空间
+
+int main() {
+    A obj { 1, 2, 3, 4, 5 };
+    add10(obj);
+    print_struct(obj);
+    add20(obj);
+    print_struct(obj);
+    //add10()函数单向值传递参数，对原变量无影响，add20()函数按引用传递参数，对原变量有影响
+}
+```
