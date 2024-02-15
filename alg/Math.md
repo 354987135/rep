@@ -16,24 +16,8 @@ std::uint64_t IntFastPow(std::uint64_t base, std::uint64_t exp) {
     return ans;
 }
 ```
-## 高精度算法
-### 十进制浮点类型 decimal
 
-## 随机数
-```cpp
-std::random_device rd;
-std::mt19937 engine(rd());
 
-int GetRdInt(int start, int end) {
-    std::uniform_int_distribution<int> dist(start, end);
-    return dist(engine);
-}
-
-double GetRdDouble(double start, double end) {
-    std::uniform_real_distribution<double> dist(start, end);
-    return dist(engine);
-}
-```
 # 位运算
 ```cpp
 void Swap(int& a, int& b)
