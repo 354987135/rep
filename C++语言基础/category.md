@@ -24,16 +24,24 @@
   - 获取、修改元素
   - 输入输出方法（两层嵌套循环）、行和列的概念
   - 二维数组填数问题
+- C 风格字符串
+- 指针、多维数组、
 - 函数
   - 函数调用（printf()、scanf()、cin.get()都是函数调用）
   - 自定义函数
     - 命名（标识符规则）、返回值、形参、实参、参数传递（单向值传递）
   - 函数重载
-- C 风格字符串
+  - 左值引用、双向值传递
 - 自定义类型（struct、union）
-- 指针、多维数组、
-- STL-array、vector、deque、迭代器
-- STL-string
+  - 基本语法（全局定义、可以在函数中定义类）
+  - 成员（成员变量、构造函数、构造函数重载）
+  - 自定义类型的指针、箭头运算符
+  - 简单的类模板（typename T）
+- STL
+  - STL-array、vector、deque、string（对于迭代器暂时只需要知道它和指针类似）
+  - 详解STL 迭代器
+  - STL 算法库常用算法 minmax、swap、sort等
+  - std::pair、std::tuple(how to iterate a tuple?)
 - 文件操作
   - 输入输出重定向
   - fstream 文件流
