@@ -25,7 +25,7 @@
   - 输入输出方法（两层嵌套循环）、行和列的概念
   - 二维数组填数问题
 - C 风格字符串
-- 指针、多维数组、
+- 指针、多维数组
 - 函数
   - 函数调用（printf()、scanf()、cin.get()都是函数调用）
   - 自定义函数
@@ -42,6 +42,12 @@
   - 详解STL 迭代器
   - STL 算法库常用算法 minmax、swap、sort等
   - std::pair、std::tuple(how to iterate a tuple?)
+- 位运算
+  - & | ^ 的性质
+  - bitset
+- 自动类型推断
+  - auto （会去掉引用和顶层cv限定符）
+  - decltype（能够用于保留引用和cv限定符，判定表达式值类别）
 - 文件操作
   - 输入输出重定向
   - fstream 文件流
