@@ -1,0 +1,5 @@
+*.pdf
+*.exe
+
+onenote/backup/
+onenote/notes/OneNote_RecycleBin/
