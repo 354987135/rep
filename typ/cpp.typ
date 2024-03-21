@@ -121,3 +121,27 @@ if (x > 0 && x == (x & -x)) { // 由于涉及到取相反数，x必须为有符�
 - 方法3
 从C++20开始，标准库提供_*std::has_single_bit*_函数 (头文件\<bit\>)，可直接进行判断，该函数只接受无符号整数
 = OOP
+
+// https://developer.aliyun.com/article/1389769
+
+// https://www.zhihu.com/question/38206659
+
+// https://blog.csdn.net/qq_50285142/article/details/116380796
+
+// https://graphics.stanford.edu/~seander/bithacks.html 
+
+
+=== 按位左移
++ $>>$运算符，双目
+
++ 
+=== 按位右移
++ $<<$运算符，双目
+
++ 
+
+
+
+=== 提取$x$最低位的$1$ <Chapter5.4.2>
+=== 去除$x$最低位的$1$ <Chapter5.4.3>
+=== 输出整数$x$的补码
