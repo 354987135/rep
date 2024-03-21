@@ -137,3 +137,51 @@ gdkg
 )
 #outline()
 afjkoia
+
+
+
+定义在 _\<algorithm\>_ 头文件中
+
+
+可以同时加粗、加斜(有些字体不支持加粗、加斜)
+#set text(font: "Fira Code")
+*_std::lower_bound(begin, end, x)_*：
+#set text(font: "Linux Libertine")
+在以begin和end迭代器标识的有序（按 < 关系有序）range中，寻找第一个不先序于x（即 >= x）的元素，返回该元素的迭代器
+
+*_std::upper_bound(begin, end, x)_*：
+在以begin和end迭代器标识的有序（按 < 关系有序）range中，寻找第一个先序于x（即 > x）的元素，返回指向该元素的迭代器
+
+以上 2 个函数，如果未找到目标元素，则返回传入的 end 迭代器
+
+std::equal_range(begin, end, x)：
+同时进行std::lower_bound(begin, end, x) 和 std::upper_bound(begin, end, x)，以pair形式返回结果，其中first成员是std::lower_bound(begin, end, x)的返回值，second成员是std::upper_bound(begin, end, x)的返回值
+second - first 可以得到等于 x 的元素的个数
+
+std::binary_search(begin, end, x)：
+在以begin和end迭代器标识的有序（按 < 关系有序）range中，查找是否存在x，返回bool值
+
+
+如何修改代码块中的中文字体？
+```cpp
+#include <iostream>
+
+// 我是的发
+```
+#set text(font: "Linux Libertine")
+// #show raw.where(block: true, lang: "cpp", tab-size: 2): block.with(
+//     fill: luma(240),
+//     inset: (2pt),
+//     outset: (y: 2pt),
+//     radius: 1pt
+// )
+```cpp
+int main() {
+
+    return 0;
+} 
+```
+#set text(font: "Source Han Sans SC")
+
+中文斜体加粗的包？
+根据*_多维数组_*
