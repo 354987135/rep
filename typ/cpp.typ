@@ -7,12 +7,17 @@
 #let spacing = h(0.25em, weak: true)
 #show math.equation.where(block: false): it => spacing + it + spacing
 
-= C++程序与编译器
-= 数组
-= 指针与指针
+= C++程序与编译
+== 未定义行为
+== 编译
+=== 预处理器
+=== 翻译单元
+=== 链接器
+= 类型与值类别
+= 数组与指针
 == 原始指针
-通常提到“指针”一词时，指的是原始指针(raw pointer)，也叫裸指针(naked pointer)
-== 智能指针
+通常情况下，提到“指针”一词时，指的是原始指针(raw pointer)，也叫裸指针(naked pointer)
+
 == 范围与迭代器
 迭代器类型、迭代器*无效化*
 = 字符与字符串
@@ -231,3 +236,6 @@ int x1 = x & (x - 1);
 = 函数
 = 面向对象编程
 = 泛型编程
+= 异常处理
+= 内存管理
+== 智能指针
