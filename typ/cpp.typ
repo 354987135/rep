@@ -21,7 +21,9 @@
 == 范围与迭代器
 迭代器类型、迭代器*无效化*
 = 字符与字符串
-
+== 
+== char
+char类型的字符是使用ASCII编码的字符，char的符号由实现定义，通常来说是signed char，能够存储-128\~127范围内的整数，其中 0\~127 范围内的每个整数都代表一个字符，这张整数和字符对应的表称为 ASCII 码表，在表上，32\~126 是可显示字符，0\~31 和 127 是控制字符，不可显示
 = 位运算
 == 注意点
 + 位运算的操作数都是定点整数，能够参与位运算的具体类型详见#link("https://en.cppreference.com/w/cpp/language/operator_arithmetic")[*_Built-in bitwise logic operators_*]和#link("https://en.cppreference.com/w/cpp/language/operator_arithmetic")[*_Built-in bitwise shift operators_*]
