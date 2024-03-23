@@ -21,7 +21,7 @@
 == 注意点
 + 位运算的操作数都是定点整数，能够参与位运算的具体类型详见#link("https://en.cppreference.com/w/cpp/language/operator_arithmetic")[*_Built-in bitwise logic operators_*]和#link("https://en.cppreference.com/w/cpp/language/operator_arithmetic")[*_Built-in bitwise shift operators_*]
 
-+ 整数以补码的形式存储，参与位运算的是补码的二进制位
++ 定点整数以补码的形式存储，参与位运算的是补码的二进制位
 
 + 位运算符的优先级从高到低排序如下
   + $~$
@@ -179,7 +179,7 @@ int x1 = x & (x - 1);
 - 方法3
 
     从C++20开始，可使用标准库提供的#link("https://en.cppreference.com/w/cpp/numeric/has_single_bit")[*_std::has_single_bit_*]函数直接进行判断
-=== 整数四则运算
+=== 用位运算实现整数四则运算
 + 加法
   
   通过观察可以发现，$a arrowhead.t b$的结果是$a,b$不进位加法的结果，而$a space \& space b$的结果是$a, b$加法的进位信息，例如
@@ -188,9 +188,9 @@ int x1 = x & (x - 1);
     arrowhead.t space & 00111010 quad quad \& space && 00111011\ 
     = & overline(01110001) quad quad = && overline(00001011)
   $
-  由于进位是需要加到更高位上的，还需要将$a space \& space b$得到的进位信息左移$1$位才能使用，如此，我们就得到了新的加数$a' := a arrowhead.t b, space b' := (a space \& space b) << 1$，相同的规则可以应用在$a', b'$上，再产生新的加数，重复执行这一过程，直到不需要再进位，即$(a space \& space b) << 1 = 0$，就完成了整个加法过程
+  由于进位是需要加到更高位上的，还需要将$a space \& space b$得到的进位信息左移$1$位，如此，我们就得到了新的加数$a' := a arrowhead.t b, space b' := (a space \& space b) << 1$，将相同的规则应用在$a', b'$上，可以产生新的加数，重复执行这一过程，直到不需要再进位，即$(a space \& space b) << 1 = 0$，就完成了加法
 
-  代码实现如下：
+  代码实现如下
   ```cpp
   int Add(int a, int b) {
       int t = 0;
@@ -203,10 +203,31 @@ int x1 = x & (x - 1);
   }
   ```
 + 减法
-  
+
+  根据$a - b = a + (-b)$和按位取反运算的性质*_(@chapter5.2.1[])_*，减法可以转换为加法实现
+
+  代码实现如下
+  ```cpp
+  int Subtract(int a, int b) {
+      return Add(a, ~b + 1);
+  }
+  ```
 + 乘法
 
+  代码实现如下
+  ```cpp
+  int Multiply(int a, int b) {
+      
+  }
+  ```
 + 除法
+
+  代码实现如下
+  ```cpp
+  int Divide(int a, int b) {
+      
+  }
+  ```
 = 函数
 = 面向对象编程
 = 泛型编程
