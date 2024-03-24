@@ -141,7 +141,7 @@ $
   0101underline(1000) - 1 &= 0101underline(0111) 
 $也就是说，$-1$可以将形如$...underline(10...0)$的二进制数转换为形如$...underline(01...1)$的二进制数，那么反过来，$+1$可以实现从$...underline(01...1)$到$...underline(10...0)$的转换，这一性质与按位取反运算结合就可以实现部分取反，将取反操作截至最低的$1$位之前
 
-令$x := 11010underline(100)$，则$~x = 00101011, space ~x + 1 = 00101underline(100)$，利用$x space \& space ~x + 1$即可以保留最低的$1$位并消去多余的高位，得到$00000100$，该数保存了提取出的$x$最低的$1$位
+令$x := 11010underline(100)$，则$~x = 00101underline(011), space ~x + 1 = 00101underline(100)$，利用$x space \& space ~x + 1$即可以保留最低的$1$位并消去多余的高位，得到$00000100$，该数保存了提取出的$x$最低的$1$位
 
 根据按位取反运算的性质(*_@chapter5.2.1[]_*)，$x space \& space -x$的效果与$x space \& space ~x + 1$相同
 
@@ -199,10 +199,10 @@ int x1 = x & (x - 1);
   通过观察可以发现，$a arrowhead.t b$的结果是$a,b$不进位加法的结果，而$a space \& space b$的结果是$a, b$加法的进位信息，例如
   $ 
     & 01001011 quad quad && 01001011\ 
-    arrowhead.t space & 00111010 quad quad \& space && 00111011\ 
-    = & overline(01110001) quad quad = && overline(00001011)
+    arrowhead.t space & 00111010 quad quad \& space && 00111010\ 
+    = & overline(01110001) quad quad = && overline(00001010)
   $
-  由于进位是需要加到更高位上的，还需要将$a space \& space b$得到的进位信息左移$1$位，如此，我们就得到了新的加数$a' := a arrowhead.t b, space b' := (a space \& space b) << 1$，将相同的规则应用在$a', b'$上，可以产生新的加数，重复执行这一过程，直到不需要再进位，即$(a space \& space b) << 1 = 0$，就完成了加法
+  由于进位是需要加到更高位上的，还需要将$a space \& space b$得到的进位信息左移$1$位，只要存在进位，就说明加法还没有完成，如此，我们就得到了新的加数$a' := a arrowhead.t b, space b' := (a space \& space b) << 1$，将相同的规则应用在$a', b'$上，可以产生新的加数，重复执行这一过程，直到不需要再进位，即$(a space \& space b) << 1 = 0$，就完成了加法
 
   代码实现如下
   ```cpp
