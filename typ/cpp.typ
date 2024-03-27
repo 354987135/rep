@@ -214,6 +214,7 @@ int x1 = x & (x - 1);
 - 方法3
 
     从C++20开始，可使用标准库提供的#link("https://en.cppreference.com/w/cpp/numeric/has_single_bit")[*_std::has_single_bit_*]函数直接进行判断
+=== 计算$x$的绝对值
 === 用位运算实现整数四则运算
 + 加法
   
