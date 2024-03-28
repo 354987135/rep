@@ -98,7 +98,7 @@
 + 整数是定点数，左移相当于将小数点右移，在二进制下，小数点右移$i$位相当于将原数乘上$2^i$，即$ a << i = a times 2^i $
 
 + 在C++20之前，只有当$a >= 0$时才能对$a$进行按位左移运算，若$a < 0$，则行为未定义，详见#link("https://en.cppreference.com/w/cpp/language/operator_arithmetic")[*_Built-in bitwise shift operators_*]
-=== 按位右移
+=== 按位右移 <charpter3.4.2>
 + $>>$运算符，二元
 
 + $a >> i$表示将$a$的补码整体右移$i$位，如果$a >= 0$，则在左侧补$i$位$0$，如果$a < 0$，则在左侧补$i$位$1$，从而保持$a$的符号不变，并丢弃右侧超出位数范围的$i$位，这一右移规则称为算术右移
@@ -215,6 +215,16 @@ int x1 = x & (x - 1);
 
     从C++20开始，可使用标准库提供的#link("https://en.cppreference.com/w/cpp/numeric/has_single_bit")[*_std::has_single_bit_*]函数直接进行判断
 === 计算$x$的绝对值
+假设$x$是$32$位整数，若$x$是正数，则$x >> 31 = 0$，若$x$是负数，则$x >> 31 = -1$，设$"mask" := x >> 31$，由按位取反运算的性质(*_@chapter5.2.1[]_*)可知，$x$的相反数可由$~x + 1$得到，由按位异或运算的性质(*_@chapter5.2.3[]_*)可知，$x space arrowhead.t space -1 = ~x$，因此，当$x$是负数时，$(x space arrowhead.t "mask") - "mask" = -x$，当$x$是正数时，$(x space arrowhead.t "mask") - "mask" = x$，可以使用该式计算$x$的绝对值
+
+代码实现如下：
+```cpp
+int Abs(int x) {
+    int bits = 32;
+    int mask = x >> bits - 1;
+    return (x ^ mask) - mask;
+}
+```
 === 用位运算实现整数四则运算
 + 加法
   
@@ -226,7 +236,7 @@ int x1 = x & (x - 1);
   $
   由于进位是需要加到更高位上的，还要将$a space \& space b$得到的进位信息左移$1$位处理
   
-  只要存在进位，就说明加法还没有完成，如此，我们就得到了新的加数$a' := a arrowhead.t b, space b' := (a space \& space b) << 1$，将相同的规则应用在$a', b'$上，可以产生新的加数，重复执行这一过程，直到不需要再进位，即$(a space \& space b) << 1 = 0$，就完成了加法
+  只要存在进位，就说明加法还没有完成，如此，我们就得到了新的加数$a' := a arrowhead.t b, space b' := (a space \& space b) << 1$，将相同的规则应用在$a', b'$上，可以产生新的加数，重复执行这一过程，直到不需要再进位，即$(a space \& space b) << 1 = 0$
 
   代码实现如下
   ```cpp
@@ -237,10 +247,10 @@ int x1 = x & (x - 1);
           b = (a & b) << 1;
           a = sum;
       }
-      return sum;
+      return a;
   }
   ```
-  计算时若发生上溢则会变为负数，例如$2147483647 + 1 = -2147483648$，发生下溢则会变为正数，例如$-2147483648 - 1 = 2147483647$
+  注意返回值应当是$a$，而不是$"sum"$，当$b$初始值为$0$时，返回$"sum"$会得到错误结果
 + 减法
 
   根据$a - b = a + (-b)$和按位取反运算的性质(*_@chapter5.2.1[]_*)，减法可以转换为加法实现
@@ -252,11 +262,58 @@ int x1 = x & (x - 1);
   }
   ```
 + 乘法
+  
+  假设$a, b$均为$8$位无符号整数，$a = 11011011, b = 10110001$，则$a * b$的运算过程如下
+
+  $#{let i = 0; while i < 34 {[$space.fig$]; i += 1;}} 11011011\
+  #{let i = 0; while i < 32 {[$space.fig$]; i += 1;}} * #h(3pt) 10110001\
+  #{let i = 0; while i < 34 {[$space.fig$]; i += 1;}} overline(11011011)\
+  #{let i = 0; while i < 33 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v \
+  #{let i = 0; while i < 32 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v #{let i = 0; while i < 1 {[$#h(3pt) dots.v$]; i += 1;}}\
+  #{let i = 0; while i < 31 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v #{let i = 0; while i < 2 {[$#h(3pt) dots.v$]; i += 1;}}\
+  #{let i = 0; while i < 30 {[$space.fig$]; i += 1;}} 11011011 #h(2pt) dots.v #{let i = 0; while i < 3 {[$#h(3pt) dots.v$]; i += 1;}}\
+  #{let i = 0; while i < 29 {[$space.fig$]; i += 1;}} 11011011 #h(2pt) dots.v #{let i = 0; while i < 4 {[$#h(3pt) dots.v$]; i += 1;}}\
+  #{let i = 0; while i < 28 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v #{let i = 0; while i < 5 {[$#h(3pt) dots.v$]; i += 1;}}\
+  #{let i = 0; while i < 27 {[$space.fig$]; i += 1;}} 11011011 #h(2pt) dots.v #{let i = 0; while i < 6 {[$#h(3pt) dots.v$]; i += 1;}}\
+  #{let i = 0; while i < 34 {[$space.fig$]; i += 1;}} overline(01101011) = (107)_10$
+  
+  从低位到高位，每次使用$b$的一位$b_i$与$a$整体相乘，得到一个部分积，如果$b_i$是$0$，则该部分积是$0$，如果$b_i$是$1$，则该部分积是$a$，之后将该部分积左移，使其末位与$b_i$对齐，右侧补$0$，如此得到所有的部分积后，将它们累加起来并丢弃超出范围的位，就得到了$a * b$的积
+  
+  可以看出，乘法的本质也是加法，可以利用移位运算将乘法转换为加法计算，每次得到部分积后，将$a$左移$1$位，将$b$右移$1$位，直到计算完所有的部分积，即$b = 0$
 
   代码实现如下
   ```cpp
   int Multiply(int a, int b) {
-      
+      int ans = 0;
+      while (b) {
+          if (b & 1) {
+              ans = Add(ans, a);
+          }
+          a <<= 1;
+          b >>= 1;
+      }
+      return ans;
+  }
+  ```
+  根据(*_@charpter3.4.2[]_*)，对负数执行按位右移运算会在左侧补$1$，因此该算法不支持$b < 0$的情况
+  
+  假设$a, b$都是$32$位有符号整数，加入符号处理后的代码实现如下
+  ```cpp
+  int Multiply(int a, int b) {
+      int bits = 32;
+      int sign_a = a >> Add(bits, ~0);
+      int sign_b = b >> Add(bits, ~0);
+      a = Add(a ^ sign_a, Add(~sign_a, 1));
+      b = Add(b ^ sign_b, Add(~sign_b, 1));
+      int ans = 0;
+      while (b) {
+          if (b & 1) {
+              ans = Add(ans, a);
+          }
+          a <<= 1;
+          b >>= 1;
+      }
+      return sign_a ^ sign_b ? Add(~ans, 1) : ans;
   }
   ```
 + 除法
