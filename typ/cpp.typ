@@ -2,18 +2,30 @@
 
 #show raw: set text(font: ("Fira Code", "Noto Sans SC"), features: (calt: 0), lang: "cpp")
 
+
+#show raw.where(block: false, lang: "cpp"): box.with(
+  fill: luma(240),
+  inset: (x: 2pt, y: 0pt),
+  outset: (y: 3pt),
+  radius: 2pt
+)
+
 #show heading.where(): set heading(numbering: "1.")
 
 #let spacing = h(0.25em, weak: true)
 #show math.equation.where(block: false): it => spacing + it + spacing
 
-= C++程序与编译
-== 未定义行为
+= C++程序
 == 编译
 === 预处理器
 === 翻译单元
 === 链接器
-= 类型与值类别
+== C++程序的行为
+=== 未定义行为
+= 类型与对象
+== cv限定符
+== 类型转换
+= 表达式与值类别
 == 移动语义
 = 整数与位运算
 == 整数的表示
@@ -97,7 +109,7 @@
 
 + 整数是定点数，左移相当于将小数点右移，在二进制下，小数点右移$i$位相当于将原数乘上$2^i$，即$ a << i = a times 2^i $
 
-+ 在C++20之前，只有当$a >= 0$时才能对$a$进行按位左移运算，若$a < 0$，则行为未定义，详见#link("https://en.cppreference.com/w/cpp/language/operator_arithmetic")[*_Built-in bitwise shift operators_*]
++ 在C++20之前，只有当$a >= 0$时才能对$a$进行按位左移运算，若$a < 0$，则行为未定义，详见#link("https://en.cppreference.com/w/cpp/language/operator_arithmetic#Built-in_bitwise_shift_operators")[*_Built-in bitwise shift operators_*]
 === 按位右移 <charpter3.4.2>
 + $>>$运算符，二元
 
@@ -324,17 +336,46 @@ int Abs(int x) {
       
   }
   ```
-= 数组与指针
+= 指针与数组
 == 原始指针
-通常情况下，提到“指针”一词时，指的是原始指针(raw pointer)，也叫裸指针(naked pointer)
+=== 概念
++ 提到“指针”一词时，通常表示的是指向对象的原始指针(_raw pointer_)，也叫裸指针(_naked pointer_)，即类型为```cpp T *``` 的对象，它们的作用是保存```cpp T```类型对象的地址，因为地址的长度是固定的，只与机器字长有关，所以指针占用的内存大小也只与机器字长有关，与```cpp T```无关，例如，在32位和64位CPU上，指针分别占4个字节和8个字节
 
++ 写法上，```cpp *``` 可以紧贴着```cpp T```写，即```cpp T*```
+
++ 空指针(_null pointer_)，指值为空指针常量```cpp nullptr```的指针
+
++ 野指针(_wild pointer_)，指值未知的指针
+
++ 哨兵指针，也称为尾后指针
+
++ 悬空指针(_dangling pointer_), 
+=== 语法
++ 声明指针
+
++
+=== 指针与cv限定
+见#link("https://en.cppreference.com/w/cpp/language/pointer#Constness")[*_Constness_*]
 = 函数
+== 函数指针
 == 完美转发
+== lambda表达式
+在本章之前需要先了解 8.
 = 字符与字符串
 == 
 == char
 char类型的字符是使用ASCII编码的字符，char的符号由实现定义，通常来说是signed char，能够存储-128\~127范围内的整数，其中 0\~127 范围内的每个整数都代表一个字符，这张整数和字符对应的表称为 ASCII 码表，在表上，32\~126 是可显示字符，0\~31 和 127 是控制字符，不可显示
-= 面向对象与泛型编程
+== C风格字符串
+== std::string容器
+= 面向对象编程
+== 类与成员
+== 指向类成员的指针
+=== 指向数据成员的指针
+=== 指向成员函数的指针
+= 泛型编程
+== 模板
+== 函数模板
+== 类模板
 = 内存管理
 == 智能指针
 = 异常处理
