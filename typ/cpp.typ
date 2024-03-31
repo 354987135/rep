@@ -24,6 +24,7 @@
 === 未定义行为
 = 类型与对象
 == cv限定符
+#link("https://en.cppreference.com/w/cpp/language/cv")[*_cv限定_*]
 == 类型转换
 = 表达式与值类别
 == 移动语义
@@ -313,8 +314,10 @@ int Abs(int x) {
   ```cpp
   int Multiply(int a, int b) {
       int bits = 32;
+      // 获取 a, b 的符号
       int sign_a = a >> Add(bits, ~0);
       int sign_b = b >> Add(bits, ~0);
+      // 取 a, b 的绝对值，原理见 (4.5.7)
       a = Add(a ^ sign_a, Add(~sign_a, 1));
       b = Add(b ^ sign_b, Add(~sign_b, 1));
       int ans = 0;
@@ -338,24 +341,32 @@ int Abs(int x) {
   ```
 = 指针与数组
 == 原始指针
-=== 概念
-+ 提到“指针”一词时，通常表示的是指向对象的原始指针(_raw pointer_)，也叫裸指针(_naked pointer_)，即类型为```cpp T *``` 的对象，它们的作用是保存```cpp T```类型对象的地址，因为地址的长度是固定的，只与机器字长有关，所以指针占用的内存大小也只与机器字长有关，与```cpp T```无关，例如，在32位和64位CPU上，指针分别占4个字节和8个字节
+=== 基本概念
++ 提到指针一词时，通常表示的是指向对象的原始指针(_raw pointer_)，也叫裸指针(_naked pointer_)，即类型为```cpp T *``` 的对象，它们的作用是保存```cpp T```类型对象的地址，地址是一个长度固定的十六进制整数，地址长度只与机器字长有关，所以指针占用的内存大小也只与机器字长有关，与```cpp T```无关，在最常见的32位和64位机器上，指针分别占4个字节和8个字节
 
 + 写法上，```cpp *``` 可以紧贴着```cpp T```写，即```cpp T*```
 
-+ 空指针(_null pointer_)，指值为空指针常量```cpp nullptr```的指针
++ 指针的值
+  - 值为空指针常量，即```cpp nullptr```的指针称为空指针(_null pointer_)
 
-+ 野指针(_wild pointer_)，指值未知的指针
+  - 哨兵指针，也称为尾后指针
 
-+ 哨兵指针，也称为尾后指针
+  - 如果指针的值是...，野指针
 
-+ 悬空指针(_dangling pointer_), 
+  - 如果指针指向的对象所占用的内存被释放，但该指针依然指向这块内存，则称该指针为悬垂指针(_dangling pointer_)
+
+  - 野指针，悬垂指针统称无效指针(_invalid pointer_)
++ 通过指针获取其指向的对象的过程称为解引用，此过程需要用到间接寻址运算符```cpp *```，解引用空指针和无效指针是未定义行为
+
++ 特别地，类型为```cpp void *```的指针称为无类型指针，它不指向任何对象，也不能被解引用，仅用于保存地址
 === 语法
 + 声明指针
 
-+
++ 
 === 指针与cv限定
 见#link("https://en.cppreference.com/w/cpp/language/pointer#Constness")[*_Constness_*]
+=== 指针算术运算
+
 = 函数
 == 函数指针
 == 完美转发
