@@ -62,9 +62,11 @@ bfs
 == 高精度算法
 === 高精度整数
 ==== 大整数的表示
-过大的整数无法使用基本整数类型进行存储和运算，只能以数组的形式去存储整数的每一位，为了便于在运算时处理进位、借位等问题，最合适的存储方法是将每一位保存为```cpp int```并倒序存储
+设$a$是$n$位正整数，$b$是$m$位正整数，$a_i, b_i$分别为$a, b$的第$i + 1$位，我们知道，对于十进制数$a, b$，有$0 <= a_i, b_i <= 9$，且第$i + 1$位的位权为$i$，$a, b$的数值与$a_i, b_i$有以下关系$ a = a_(n - 1)...a_3a_2a_1&a_0 = sum_(i = 0)^(n - 1)a_i dot 10^i\ b = b_(m - 1)...b_3b_2b_1&b_0 = sum_(i = 0)^(m - 1)b_i dot 10^i $
 
-输入时，应当将大整数作为字符串整体输入，以便于获取整数的位数、大小、符号信息
+过大的整数无法使用基本整数类型进行存储和运算，只能以字符型数组或整形数组的形式去存储整数的每一位，其中整型数组便于在运算时处理进位、借位等问题，因此最合适的存储方法是将每一位倒序存储在整形数组中
+
+输入时，可以将大整数作为```cpp std::string```整体输入，以便于获取整数的位数、大小、符号信息
   
 设正整数$ a &:= 123456789987654321123456789,\ b &:= 3875109875159571357835819359817 $依次输入$a, b$，则表示$a, b$的代码实现如下
 ```cpp
@@ -83,27 +85,40 @@ std::vector<int> a = Transform(aStr), b = Transform(bStr);
 // b: 7 1 8 9 5 3 9 1 8 5 3 8 7 5 3 1 7 5 9 5 1 5 7 8 9 0 1 5 7 8 3
 ```
 ==== 比较大整数的大小
+某些情况下，我们需要比较两个大整数$a, b$的大小关系
 
+以小于关系为例，只要$a, b$位数相同，且任意一对$a_i, b_i$满足$a_i < b_i$，就可以说明$a < b$，代码实现如下
+```cpp
+bool LessThan(const std::vector<int>& a, const std::vector<int>& b) {
+    int k = std::max(a.size(), b.size());
+    a.resize(k);
+    b.resize(k);
+    for (int i = k - 1; i >= 0; --i) {
+        if (a[i] < b[i]) {
+            return true;
+        }
+    }
+    return false;
+}
+```
 ==== 四则运算
 这一节只考虑正整数$a, b$的四则运算，带符号处理的完整四则运算将在(_@chapter3.5.1.4[]_)讨论
-
-设$a$有$n$位，$b$有$m$位，$a_i, b_i$分别为$a, b$的第$i + 1$位，我们知道，对于十进制数$a, b$，有$0 <= a_i, b_i <= 9$，且第$i + 1$位的位权为$i$，$a, b$的数值与$a_i, b_i$有以下关系$ a = a_(n - 1)...a_3a_2a_1&a_0 = sum_(i = 0)^(n - 1)a_i dot 10^i\ b = b_(m - 1)...b_3b_2b_1&b_0 = sum_(i = 0)^(m - 1)b_i dot 10^i $
 + 加法
 
   设$a n s = a + b$，其中$a, b$的位数至多为$k$位
   
   两个至多$k$位的正整数相加，结果位数至多为$k + 1$位，因此，为了便于计算和保存结果，$a, b, a n s$数组的长度都应当为$k + 1$
   
-  计算$a + b$就是模拟加法竖式的计算过程，首先将$a_i, b_i$逐位相加，即$a n s_i = a_i + b_i$，然后再处理进位，如果允许$a n s_i > 9$，那么我们会得到形如$n = 1 space 3 space 46 space 8$的数，其中$n_1 = 46$，这并不是我们熟知的标准十进制表示，但是它等价于$n' = 1 space 7 space 6 space 8$，因为$46 times 10^1 = 4 times 10^2 + 6 times 10^1$，将$4$加到$n_2$上，就可以得到$n'$，显然，$n$与$n'$表示的数值是相等的，同理，对于$a + b$，我们可以先得到$a n s$，再处理每一位$a n s_i$，将其转化为$a n s'$，$a n s'$就是加法运算的结果
+  计算$a + b$需要模拟加法竖式的计算过程，首先将$a_i, b_i$逐位相加，即$a n s_i = a_i + b_i$，然后再处理进位，在这一过程中会出现$a n s_i > 9$的情况，也就是说，我们会得到形如$n = 1 space 3 space 46 space 8$的数，其中$n_1 = 46$，这并不是我们熟知的标准十进制表示，但是它等价于$n' = 1 space 7 space 6 space 8$，因为$46 times 10^1 = 4 times 10^2 + 6 times 10^1$，将$4$加到$n_2$上，就可以得到$n'$，显然，$n$与$n'$表示的数值是相等的，同理，对于$a + b$，我们可以先得到$a n s$，再处理每一位$a n s_i$，将其转换为$a n s'$，$a n s'$就是加法运算的结果
   
-  转化过程如下$ n'_(i + 1) &= n_(i + 1) + floor(n_i / 10)\ n'_i &= n_i % 10 $代码实现如下
+  每一位的转换过程如下$ n'_(i + 1) &= n_(i + 1) + floor(n_i / 10)\ n'_i &= n_i % 10 $代码实现如下
   ```cpp 
   for (int i = 0; i < k + 1; ++i) {
       n[i + 1] += n[i] / 10;
       n[i] %= 10;
   }
   ```
-  为了避免下标出现```cpp i + 1```，导致潜在的越界错误，可以创建一个变量```cpp carry```来保存进位，优化后的代码如下
+  为了避免下标出现```cpp i + 1```，导致潜在的越界错误，可以创建一个变量```cpp carry```来保存前一位的进位，优化后的代码如下
   ```cpp 
   int carry = 0;
   for (int i = 0; i < k + 1; ++i) {
@@ -118,6 +133,9 @@ std::vector<int> a = Transform(aStr), b = Transform(bStr);
   ```cpp
   int k = std::max(aStr.size(), bStr.size()) + 1;
   std::vector<int> a(k), b(k), ans(k);
+
+  // 省略转换 a, b 的过程
+
   int carry = 0;
   for (int i = 0; i < k; ++i) {
       ans[i] = a[i] + b[i] + carry;
@@ -139,35 +157,51 @@ std::vector<int> a = Transform(aStr), b = Transform(bStr);
   
   两个至多$k$位的正整数相减，结果位数至多为$k$位，因此，为了便于计算和保存结果，$a, b, a n s$数组的长度都应当为$k$
 
-  计算$a - b$时，首先要保证被减数大于等于减数，否则结果会出现错误，如果$a < b$，则需要交换$a, b$，并且最终结果为负数，代码实现如下
+  计算$a - b$需要模拟减法竖式的计算过程，在逐位对$a_i, b_i$做相减操作之前，首先要考虑$a, b$的大小关系，对于结果来说，如果$a < b$，则最终结果为负数，输出结果时应当带有负号，对于竖式计算来说，要保证被减数大于等于减数，如果$a < b$，则应当先交换$a, b$，再进行计算，代码实现如下
   ```cpp
-  bool negative = false;
-  if (aStr.size() < bStr.size() || aStr.size() == bStr.size() && aStr < bStr) {
-      std::swap(aStr, bStr);
-      negative = true;
-  }
+  bool negative = false; // 标记结果是否为负数
+  for (int i = k - 1; i >= 0; --i) {
+      if (a[i] < b[i]) {
+          std::swap(a, b);
+          negative = true;
+          break;
+      }
+  } 
   ```
-  计算时，将$a_i, b_i$逐位相减，即$a n s_i = a_i - b_i$，和加法类似，如果不考虑借位，即允许$a n s_i < 0$，那么会得到形如$n = 1 space 3 space -23 space 8$的数，其中$n_1 = -23$，和加法时的处理一样，$-23 times 10^1 = -3 times 10^2 + 7 times 10^1 $，将$-3$加到$n_2$上就可以得到标准十进制表示$n' = 1 space 0 space 7 space 8$，其计算方法也是将每个$n_(i + 1)$加上$floor(n_i / 10)$，再将$n_i$变为$n_i % 10$，注意负数需要特殊处理，代码实现如下
+  完成预处理后，将$a_i, b_i$逐位相减，即$a n s_i = a_i - b_i$，和加法类似，先不考虑借位，允许出现$a n s_i < 0$的情况，得到形如$n = 1 space 3 space -23 space 8$的数，其中$n_1 = -23$，它等价于$n' = 1 space 0 space 7 space 8$，因为$-23 times 10^1 = -3 times 10^2 + 7 times 10^1 $，将$-3$加到$n_2$上，就可以得到$n'$，在此过程中，我们将借位转换为负的进位，使得转换过程和$n_i > 9$的情况相同
+  
+  因为```cpp /```运算符的结果是向$0$取整的，所以负数使用```cpp %```运算符求余数可能会得到负数，在代码实现时，需要进行一定的处理才能得到预期结果，代码实现如下
   ```cpp
   int carry = 0;
   for (int i = 0; i < k; ++i) {
       n[i] += carry;
-      carry = n[i] / 10 - (n[i] < 0);
-      n[i] = n[i] % 10 + (n[i] < 0) * 10;
+      carry = n[i] / 10 - (n[i] % 10 < 0);
+      n[i] = n[i] % 10 + (n[i] % 10 < 0) * 10;
   }
   ```
-  最终输出结果应当删除前导$0$，并注意是否应该添加负号
+  最终$a n s'$可能含有前导$0$，输出时应当删除前导$0$，并注意是否输出负号
 
   综上所述，$a - b$的代码实现如下
   ```cpp
-  std::vector<int> ans(k);
+  int k = std::max(aStr.size(), bStr.size());
+  std::vector<int> a(k), b(k), ans(k);
+  
+  // 省略转换 a, b 的过程
+
+  bool negative = false;
+  for (int i = k - 1; i >= 0; --i) {
+      if (a[i] < b[i]) {
+          std::swap(a, b);
+          negative = true;
+          break;
+      }
+  } // 判断 a, b 的大小并做出处理
+
   int carry = 0;
   for (int i = 0; i < k; ++i) {
       ans[i] = a[i] - b[i] + carry;
-      carry = ans[i] / 10 - (ans[i] < 0); // 向下取整有错 -10 / 10 = -1， -1-1=-2错误
-      ans[i] = ans[i] % 10 + (ans[i] < 0) * 10; // 取模有错 -10 % 10 = 0， 0 + 10 = 10
-      // carry = ans[i] / 10 - (ans[i] % 10 < 0);
-        // ans[i] = ans[i] % 10 + (ans[i] % 10 < 0) * 10;
+      carry = ans[i] / 10 - (ans[i] % 10 < 0);
+      ans[i] = ans[i] % 10 + (ans[i] % 10 < 0) * 10;
   } // 计算
 
   while (k - 1 > 0 && ans[k - 1] == 0) {
@@ -176,7 +210,8 @@ std::vector<int> a = Transform(aStr), b = Transform(bStr);
 
   if (negative) {
       std::cout << '-';
-  }
+  } // 判断是否输出负号
+
   for (int i = k - 1; i >= 0; --i) {
       std::cout << ans[i];
   } // 输出结果
