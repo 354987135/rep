@@ -108,7 +108,7 @@ std::vector<int> a = Transform(aStr, k), b = Transform(bStr, k);
 
 如果$a, b$位数不同，显然位数更多的数更大，如果$a, b$位数相同，那么从高位到低位，找到的第一对不相等的$a_i, b_i$的大小关系就是$a < b$的大小关系，由于大整数是使用数组存储的，我们可以先统一长度再进行比较
 
-小于关系的代码实现如下
+以小于关系为例，小于关系的代码实现如下
 ```cpp
 bool LessThan(const std::vector<int>& a, const std::vector<int>& b) {
     int k = std::max(a.size(), b.size());
