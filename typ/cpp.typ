@@ -1,5 +1,3 @@
-设$a$为$m$位正整数，$b$为$n$位正整数, $q, r$分别为 $a div b$的商和余数，则$q$至多为$m - n + 1$位，$r$至多为$n$位
-
 #set text(font: ("Linux Libertine", "Noto Sans SC"))
 
 #show raw: set text(font: ("Fira Code", "Noto Sans SC"), features: (calt: 0), lang: "cpp")
