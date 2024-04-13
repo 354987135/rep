@@ -238,24 +238,35 @@ void RmZero(std::vector<int>& n) {
 + 复杂度分析
 
     时间复杂度为$O(n)$，空间复杂度为$O(n)$，其中$n$为$a, b$位数的较大值
-===== 乘法
+===== 乘法 <chapter3.5.1.4.3>
 + 位数处理
 
-    设$a n s := a times b$，其中$a$是$m$位，$b$是$n$位
+    设$a n s := a times b$，其中$a$为$m$位，$b$为$n$位
 
-    一个$m$位的正整数与一个$n$位的正整数相乘，积的位数至多为$m + n$位，因此，$a n s$数组的长度应当为$m + n$，$a, b$数组的长度可与各自位数保持一致，初始化代码见(_@chapter3.5.1.1[]_)
+    一个$m$位的正整数与一个$n$位的正整数相乘，积的位数至多为$m + n$位，因此，$a n s$数组的长度应当为$m + n$，$a, b$数组的长度应当为各自的位数$m, n$，初始化代码见(_@chapter3.5.1.1[]_)
 + 运算过程
 
-    观察下列乘法竖式
-    $ a_5 space.fig space.fig space.fig a_4 space.fig space.fig a_3 space.fig space.fig space.fig a_2 space.fig space.fig space.fig &a_1 space.fig space.fig space.fig a_0 \ 
-    b_2 space.fig space.fig space.fig &b_1 space.fig space.fig space.fig b_0 \
-    a_5b_0 space.fig a_4b_0 space.fig a_3b_0 space.fig a_2b_0 space.fig a_1b_0 space.fig a_0b_0 \
-    a_5b_1 space.fig a_4b_1 space.fig a_3b_1 space.fig a_2b_1 space.fig a_1b_1 space.fig a_0&b_1\
-    overline(c_8c_7c_6c_5c_4c_3c_2c_1) &overline(c_0) $
-    我们可以发现，将每个$b_i$乘上$a$得到的结果左移$i$位后加起来，就可以得到积$c$，其中，每一组$i + j$相等的$a_i b_j$都需要加到$c_(i + j)$上，即$ c_(i + j) = sum_(k = 0)^(i + j)a_k b_(i + j - k) $
+    观察$a times b$的乘法竖式，其中$a, b$分别为$6, 3$位，$c$是$a times b$的积，至多为$9$位
+    $ a_5 #h(21pt) a_4 #h(21pt) a_3 #h(21pt) a_2 #h(20.5pt) a_1 #h(20.5pt) &a_0 \ 
+    times #h(116pt) b_2 #h(22pt) b_1 #h(21pt) &b_0 \
+    overline(#h(22pt) a_5b_0 #h(10.5pt) a_4b_0 #h(10.5pt) a_3b_0 #h(10pt) a_2b_0 #h(10.5pt) a_1b_0 #h(10.5pt) a_0) &overline(b_0) \
+    a_5b_1 #h(10.5pt) a_4b_1 #h(10.5pt) a_3b_1 #h(10.5pt) a_2b_1 #h(10.5pt) a_1b_1 #h(10.5pt) a_0b_1 #h(21pt) \
+    a_5b_2 #h(10.5pt) a_4b_2 #h(10.5pt) a_3b_2 #h(10.5pt) a_2b_2 #h(10.5pt) a_1b_2 #h(10.5pt) a_0b_2 #h(52.5pt) \
+    overline(c_8 #h(22pt) c_7 #h(22pt) c_6 #h(21pt) c_5 #h(21pt) c_4 #h(21pt) c_3 #h(21.5pt) c_2 #h(21.5pt) c_1 #h(22pt)) &overline(c_0) $
+    我们可以发现，将每个$b_i$乘上$a$得到的结果左移$i$位后加起来，也就是把每一个$a_i b_j$加到$c_(i + j)上$，就可以得到积$c$，因此，乘法实际上就是多次加法计算，此外，乘法满足交换律，所以$a, b$在乘法竖式中的上下位置可以交换，不影响$c$的值
+
+    因此，计算$a times b$就是模拟乘法竖式，先得到未处理进位的积$c$，再像加法一样处理进位(_@chapter3.5.1.3.1[]_)，就可以得到最终的结果$a n s$，计算$c$的代码实现如下
+    ```cpp
+    for (int i = 0; i < m; ++i) {
+        for (int j = 0; j < n; ++j) {
+            ans[i + j] += a[i] * b[j];
+        }
+    }
+    ```
 
 + 输出处理
 
+    删除$a n s$中的前导$0$(_@chapter3.5.1.3[]_)，然后倒序输出$a n s$数组
 
 + 复杂度分析
 
@@ -263,9 +274,9 @@ void RmZero(std::vector<int>& n) {
 
 + 大数乘较小数时的优化
 
-    如果乘法中的一个因子是可以使用基本整数类型存储的较小的数，那么无论这个较小的数实际有多少位，都可以被当成一个整体，即$1$位大数进行运算，但需要注意，我们依然需要较小数的位数来确定积的位数
+    如果乘法中的一个因子是可以使用基本整数类型存储的较小的数，那么无论这个较小的数实际有多少位，都可以被当成一个整体，即$1$位大数参与运算，但需要注意，我们依然需要较小数的位数来确定积的位数
 
-    该优化也就是所谓的“高精度乘低精度”，可以使乘法的时间复杂度降低到$O(n)$
+    该优化也就是所谓的“高精度乘低精度”，可以使乘法的时间复杂度降低到$O(n)$，其中$n$是大数的位数
     
     代码实现如下
     ```cpp
@@ -284,42 +295,43 @@ void RmZero(std::vector<int>& n) {
     std::string s; // 大数
     int n; // 较小数
     std::cin >> s >> n;
-    int k = s.size() + GetDigits(n);
-    std::vector<int> a = Transform(s, k), ans(k);
+    std::vector<int> a = Transform(s), ans(s.size() + GetDigits(n));
 
-    for (int i = 0; i < k; ++i) {
+    for (int i = 0; i < s.size(); ++i) {
         ans[i] = a[i] * n;
-    } // 做乘法
-
-    int carry = 0;
-    for (int i = 0; i < k; ++i) {
-        ans[i] += carry;
-        carry = ans[i] / 10;
-        ans[i] %= 10;
-    } // 处理进位
-
-    while (k - 1 > 0 && ans[k - 1] == 0) {
-        --k;
-    } // 去除前导 0, 注意积为 0 的情况 
-
-    for (int i = k - 1; i >= 0; --i) {
+    }
+    CarryProcess(ans);
+    RmZero(ans);
+    for (int i = ans.size() - 1; i >= 0; --i) {
         cout << ans[i];
-    } // 输出积
+    }
     ```
 ===== 除法
 + 位数处理
 
+    设$q$为$a div b$的商，$r$为$a div b$的余数，其中$a$为$m$位，$b$为$n$位
+
+    一个$m$位的正整数除以一个$n$位的正整数，商的位数至多为$m - n + 1$位，余数的位数至多为$n$位，因此，$q$数组的长度应当为$m - n + 1$，$r$数组的长度应当为$n$，$a, b$的长度
+
 + 运算过程
+
+    除法是乘法的逆运算，乘法可以转化为加法计算(_@chapter3.5.1.4.3[]_)，那么除法就可以转化为减法计算，
 
 + 输出处理
 
-+ 完整代码
++ 复杂度分析
+    
++ 大数除以较小数时的优化
+
+    如果被除数是大数，除数是可以使用基本整数类型存储的较小的数，那么无论除数有多少位，都可以被当成一个整体，即$1$位大数参与运算，但需要注意，我们依然需要除数的位数来确定商和余数的位数
+
+    该优化也就是所谓的“高精度除以低精度”，可以使除法的时间复杂度降低到$O(n)$，其中$n$是被除数的位数
 
 ==== 大整数类 <chapter3.5.1.4>
 ===== 实现加法与减法
 + 若$a < 0 and b < 0$，则相当于计算$|a| + |b|$，并在结果中添加负号
 + 若$a >= 0 and b < 0$，则该加法运算实际上是减法运算，相当于计算$|a| - |b|$，并在结果中添加负号
-+ 若$a < 0 and b >= 0$，则该加法运算实际上是减法运算，相当于计算$|b| - |a|$，并在结果中添加负号
++ 若$a < 0 and b >= 0$，则该加法运算实际上是减法运算，相当于计算|$b| - |a|$，并在结果中添加负号
 
 ```cpp
 struct BigInt {
