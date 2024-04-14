@@ -304,17 +304,17 @@ void RemoveTrailingZero(std::vector<int>& n) {
     }
 
     std::string s; // 大整数
-    int n; // 较小数
-    std::cin >> s >> n;
-    std::vector<int> a = Transform(s), ans(s.size() + GetDigits(n));
+    int b; // 较小数
+    std::cin >> s >> b;
+    std::vector<int> a = Transform(s), ans(s.size() + GetDigits(b));
 
     for (int i = 0; i < s.size(); ++i) {
-        ans[i] = a[i] * n;
+        ans[i] = a[i] * b;
     }
     CarryProcess(ans);
     RemoveTrailingZero(ans);
     for (int i = ans.size() - 1; i >= 0; --i) {
-        cout << ans[i];
+        std::cout << ans[i];
     }
     ```
 ===== 除法
@@ -385,10 +385,30 @@ void RemoveTrailingZero(std::vector<int>& n) {
 
 + 大整数除以较小数时的优化
 
-    如果被除数是大整数，除数是可以使用基本整数类型存储的较小的数，那么无论除数有多少位，都可以被当成一个整体，即$1$位大整数参与运算，但需要注意，我们依然需要除数的位数来确定余数的位数
+    如果被除数是大整数，除数是可以使用基本整数类型存储的较小的数，那么商依然是大整数，并且保存商的数组长度应当和保存被除数的数组长度相同，而余数和除数一样，也是可以使用基本正数类型存储的较小的数，因此，可以对除数和余数使用除法试商，从而避免重复做时间复杂度为$O(n)$的大整数减法
 
     该优化也就是所谓的“高精度除以低精度”，可以使除法的时间复杂度降低到$O(n)$，其中$n$是被除数的位数
 
+    代码实现如下
+    ```cpp
+    std::string s; // 大整数
+    int b; // 较小数
+    std::cin >> s >> b;
+    int r = 0; // 余数
+    std::vector<int> a = Transform(s), q(a.size());
+
+    for (int i = 0; i < a.size(); ++i) {
+        r = r * 10 + a[a.size() - 1 - i];
+        q[a.size() - 1 - i] = r / b;
+        r %= b;
+    }
+
+    RemoveTrailingZero(q);
+    for (int i = q.size() - 1; i >= 0; --i) {
+        std::cout << q[i];
+    }
+    std::cout << '\n' << r;
+    ```
 ==== 大整数类 <大整数类>
 ===== 实现加法与减法
 + 若$a < 0 and b < 0$，则相当于计算$|a| + |b|$，并在结果中添加负号
