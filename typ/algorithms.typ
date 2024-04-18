@@ -448,12 +448,12 @@ void RemoveTrailingZero(std::vector<int>& n) {
 ===== 完整代码
 ```cpp
 class BigInt {
-    using DivAns = std::pair<std::vector<int>, std::vector<int>>;
+    using DivAns = std::pair<BigInt, BigInt>;
 private:
     std::vector<int> num;
     bool negative;
 
-    void CarryProcess(std::vector<int>& n) {
+    static void CarryProcess(std::vector<int>& n) {
         int carry = 0;
         for (int i = 0; i < n.size(); ++i) {
             n[i] += carry;
@@ -462,15 +462,25 @@ private:
         }
     }
 
-    void RemoveTrailingZero(std::vector<int>& n) {
+    static void RemoveTrailingZero(std::vector<int>& n) {
         while (n.size() > 1 && n.back() == 0) {
             n.pop_back();
         }
     }
 
-    std::vector<int> Add(const std::vector<int>& a, const std::vector<int>& b) {
-
+    static std::vector<int> Add(const std::vector<int>& a, const std::vector<int>& b) {
+        std::vector<int> ans(std::max(a.size(), b.size()) + 1);
+        for (int i = 0; i < a.size(); ++i) {
+            ans[i] = a[i] + b[i];
+        }
+        CarryProcess(ans);
+        RemoveTrailingZero(ans);
+        return ans;
     }
+
+    // static DivAns Division(const BigInt& a, const BigInt& b) {
+
+    // }
 
 public:
     BigInt(bool neg = false) : negative(neg) {}
@@ -490,11 +500,12 @@ public:
         if (a.num.size() == b.num.size()) {
             for (int i = a.num.size() - 1; i >= 0; --i) {
                 if (a.num[i] != b.num[i]) {
-                    return a.num[i] < b.num[i] ^ !a.negative;
+                    return a.num[i] < b.num[i] ^ a.negative;
                 }
             }
+            return false;
         }
-        return a.num.size() < b.num.size() ^ !a.negative;
+        return a.num.size() < b.num.size() ^ a.negative;
     }
 
     friend std::ostream& operator<<(std::ostream& os, const BigInt& n) {
@@ -502,7 +513,7 @@ public:
             os << '-';
         }
         for (int i = n.num.size() - 1; i >= 0; --i) {
-            os << n.num.[i];
+            os << n.num[i];
         }
         return os;
     } 
@@ -514,47 +525,26 @@ public:
         return is;
     }
 
-    friend bool operator<(const BigInt& a, const BigInt& b) {
-        bool AbsLess = false;
-        if (a.num.size() == b.num.size()) {
-            for (int i = a.num.size() - 1; i >= 0; --i) {
-                if (a.num[i] != b.num[i]) {
-                    AbsLess = a.num[i] < b.num[i];
-                }
-            }
-        } else {
-            AbsLess = a.num.size() < b.num.size();
-        }
+    // friend BigInt operator+(const BigInt& a, const BigInt& b) {
+    //     BigInt ans;
+    // }
 
-        if (!a.negative && !b.negative) {
-            return AbsLess;
-        }
-        if (a.negative && b.negative) {
-            return !AbsLess;
-        }
-        return a.negative;
-    }
-
-    friend BigInt operator+(const BigInt& a, const BigInt& b) {
-        BigInt ans;
-    }
-
-    friend BigInt operator-(const BigInt& a, const BigInt& b) {
+    // friend BigInt operator-(const BigInt& a, const BigInt& b) {
         
-    }
+    // }
 
-    friend BigInt operator*(const BigInt& a, const BigInt& b) {
-        BigInt ans;
-        ans.negative = a.negative ^ b.negative;
-    }
+    // friend BigInt operator*(const BigInt& a, const BigInt& b) {
+    //     BigInt ans;
+    //     ans.negative = a.negative ^ b.negative;
+    // }
 
-    friend BigInt operator/(const BigInt& a, const BigInt& b) {
-        return Division(a, b).first;
-    }
+    // friend BigInt operator/(const BigInt& a, const BigInt& b) {
+    //     return Division(a, b).first;
+    // }
 
-    friend BigInt operator%(const BigInt& a, const BigInt& b) {
-        return Division(a, b).second;
-    }
+    // friend BigInt operator%(const BigInt& a, const BigInt& b) {
+    //     return Division(a, b).second;
+    // }
 };
 ```
 === 高精度浮点数
