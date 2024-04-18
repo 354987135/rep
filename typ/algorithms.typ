@@ -414,22 +414,147 @@ void RemoveTrailingZero(std::vector<int>& n) {
     ```
 ==== 大整数类 <大整数类>
 ===== 基本设计
+实现输入输出(```cpp >>, << ```运算符)，实现加法、减法、乘法、除法和模运算(```cpp +, -, *, /, % ```运算符)，实现比较运算(```cpp < ```运算符)，并包含对负数的处理
 
+每个大整数需要一个```cpp int ```数组成员倒序存储绝对值，一个```cpp bool ```变量存储正负信息
 ===== 带负数的四则运算
 + 加法
-
-    - 若$a >= 0 and b >= 0$或$a < 0 and b < 0$，那么需要计算$|a| + |b|$，结果的符号与参与运算的$a, b$的符号保持一致
-
-    - 若$a >= 0 and b < 0$或$a < 0 and b >= 0$，那么需要计算$|a| - |b|$，并在结果中添加负号
     
-```cpp
-struct BigInt {
-    vector<int> num;
-    bool negative {};
+    设$a n s := a + b$
 
-    friend ostream& operator<<(ostream& os, BigInt n) {
-        
+    当$a >= 0 and b >= 0$或$a < 0 and b < 0$时，$|a n s| = |a| + |b|$，$a n s$的符号与$a$相同
+
+    当$a >= 0 and b < 0$或$a < 0 and b >= 0$时，若$|a| > |b|$，则$|a n s| = |a| - |b|$，$a n s$的符号与$a$相同，若$|a| < |b|$, 则$|a n s| = |b| - |a|$，$a n s$的符号与$a$相反
+
++ 减法
+
+    设$a n s := a - b$
+
+    当$a >= 0 and b < 0$或$a < 0 and b >= 0$时，$|a n s| = |a| + |b|$，$a n s$的符号与$a$相同
+
+    当$a >= 0 and b >= 0$或$a < 0 and b < 0$时，若$|a| > |b|$，则$|a n s| = |a| - |b|$，$a n s$的符号与$a$相同，若$|a| < |b|$, 则$|a n s| = |b| - |a|$，$a n s$的符号与$a$相反
+
++ 乘法
+
+    设$a n s := a * b$
+
+    $|a n s| = |a| * |b|$，如果$a, b$同号，则$a n s$为正，否则为负
+
++ 除法
+
+    设$a n s := a * b$且$b != 0$
+
+    
+===== 完整代码
+```cpp
+class BigInt {
+    using DivAns = std::pair<std::vector<int>, std::vector<int>>;
+private:
+    std::vector<int> num;
+    bool negative;
+
+    void CarryProcess(std::vector<int>& n) {
+        int carry = 0;
+        for (int i = 0; i < n.size(); ++i) {
+            n[i] += carry;
+            carry = n[i] / 10 - (n[i] % 10 < 0);
+            n[i] = n[i] % 10 + (n[i] % 10 < 0) * 10;
+        }
+    }
+
+    void RemoveTrailingZero(std::vector<int>& n) {
+        while (n.size() > 1 && n.back() == 0) {
+            n.pop_back();
+        }
+    }
+
+    std::vector<int> Add(const std::vector<int>& a, const std::vector<int>& b) {
+
+    }
+
+public:
+    BigInt(bool neg = false) : negative(neg) {}
+    BigInt(const std::string& s, int size = 0) {
+        negative = s[0] == '-';
+        num.resize(size ? size : s.size() - negative);
+        for (int i = s.size() - 1; i >= negative; --i) {
+            num[s.size() - 1 - i] = s[i] - '0';
+        }
+    }
+    
+    friend bool operator<(const BigInt& a, const BigInt& b) {
+        if (a.negative ^ b.negative) {
+            return a.negative;
+        }
+
+        if (a.num.size() == b.num.size()) {
+            for (int i = a.num.size() - 1; i >= 0; --i) {
+                if (a.num[i] != b.num[i]) {
+                    return a.num[i] < b.num[i] ^ !a.negative;
+                }
+            }
+        }
+        return a.num.size() < b.num.size() ^ !a.negative;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const BigInt& n) {
+        if (n.negative) {
+            os << '-';
+        }
+        for (int i = n.num.size() - 1; i >= 0; --i) {
+            os << n.num.[i];
+        }
+        return os;
     } 
+
+    friend std::istream& operator>>(std::istream& is, BigInt& n) {
+        std::string s;
+        is >> s;
+        n = BigInt(s);
+        return is;
+    }
+
+    friend bool operator<(const BigInt& a, const BigInt& b) {
+        bool AbsLess = false;
+        if (a.num.size() == b.num.size()) {
+            for (int i = a.num.size() - 1; i >= 0; --i) {
+                if (a.num[i] != b.num[i]) {
+                    AbsLess = a.num[i] < b.num[i];
+                }
+            }
+        } else {
+            AbsLess = a.num.size() < b.num.size();
+        }
+
+        if (!a.negative && !b.negative) {
+            return AbsLess;
+        }
+        if (a.negative && b.negative) {
+            return !AbsLess;
+        }
+        return a.negative;
+    }
+
+    friend BigInt operator+(const BigInt& a, const BigInt& b) {
+        BigInt ans;
+    }
+
+    friend BigInt operator-(const BigInt& a, const BigInt& b) {
+        
+    }
+
+    friend BigInt operator*(const BigInt& a, const BigInt& b) {
+        BigInt ans;
+        ans.negative = a.negative ^ b.negative;
+    }
+
+    friend BigInt operator/(const BigInt& a, const BigInt& b) {
+        return Division(a, b).first;
+    }
+
+    friend BigInt operator%(const BigInt& a, const BigInt& b) {
+        return Division(a, b).second;
+    }
 };
 ```
 === 高精度浮点数
