@@ -18,6 +18,8 @@
 = 基础算法
 == 二分查找
 == 递归
+=== 计算机中的函数与数学函数的区别
+计算机中的函数根据输入的参数的性质不同，可能对整体程序造成不同的影响，而数学函数总是能够得到相同的结果，例如，$x$是全局变量时与$x$是局部变量时，整个程序的表现可能是不同的
 === 递归的概念
 递归指的是函数调用自身的行为，递归可以将复杂的问题分解为简单的子问题并逐步解决，一个问题不能被无限分解，终止这种分解过程(即终止递归)的条件称为基线条件
 
@@ -442,16 +444,36 @@ void RemoveTrailingZero(std::vector<int>& n) {
 
 + 除法
 
-    设$a n s := a * b$且$b != 0$
+    设$q$为$a div b$的商，$r$为$a div b$的余数，要求$r >= 0$，且$b != 0$
 
+    $|q|$为$|a| div |b|$的商，$|r|$为$|a| div |b|$的余数，当$r < 0$时需要修改$q, r$使得$r$满足$r >= 0$
     
+    当$a >= 0 and b >= 0$时，$q >= 0, r >= 0$
+    
+    当$a >= 0 and b < 0$时，$q < 0, r >= 0$
+
+    当$a < 0 and b >= 0$时，$q < 0, r < 0$，需要将$r$加上$b$，同时将$q$减去$1$，使得$r >= 0$
+
+    当$a < 0 and b < 0$时，$q >= 0, r < 0$，需要将$r$减去$b$，同时将$q$加上$1$，使得$r >= 0$
 ===== 完整代码
 ```cpp
 class BigInt {
-    using DivAns = std::pair<std::vector<int>, std::vector<int>>;
 private:
     std::vector<int> num;
     bool negative;
+
+    static int GetDigits(int n) {
+        n = std::abs(n);
+        if (n == 0) {
+            return 1;
+        }
+        int cnt = 0;
+        while (n > 0) {
+            n /= 10;
+            ++cnt;
+        }
+        return cnt;
+    }
 
     static void CarryProcess(std::vector<int>& n) {
         int carry = 0;
@@ -481,11 +503,6 @@ private:
         for (int i = 0; i < a.size(); ++i) {
             ans[i] = a[i] - b[i];
         }
-        return ans;
-    }
-
-    static DivAns Division(const std::vector<int>& a, const std::vector<int>& b) {
-        DivAns ans;
         return ans;
     }
 
@@ -535,6 +552,8 @@ public:
     friend BigInt operator+(const BigInt& a, const BigInt& b) {
         BigInt ans;
     
+
+
         BigInt::CarryProcess(ans.num);
         BigInt::RemoveTrailingZero(ans.num);
         return ans;
@@ -543,36 +562,56 @@ public:
     friend BigInt operator-(const BigInt& a, const BigInt& b) {
         BigInt ans;
 
+
+
         BigInt::CarryProcess(ans.num);
         BigInt::RemoveTrailingZero(ans.num);
         return ans;   
     }
 
     friend BigInt operator*(const BigInt& a, const BigInt& b) {
-        BigInt ans;
-        ans.negative = a.negative ^ b.negative;
+        BigInt ans(a.negative ^ b.negative);
         ans.num.resize(a.num.size() + b.num.size());
+
         for (int i = 0; i < a.num.size(); ++i) {
             for (int j = 0; j < b.num.size(); ++j) {
                 ans.num[i + j] += a.num[i] * b.num[j];
             }
         }
+
+        BigInt::CarryProcess(ans.num);
+        BigInt::RemoveTrailingZero(ans.num);
+        return ans;
+    }
+
+    friend BigInt operator*(const BigInt& a, int b) { 
+        BigInt ans(a.negative ^ (b < 0));
+        b = std::abs(b);
+        ans.num.resize(a.num.size() + BigInt::GetDigits(b));
+
+        for (int i = 0; i < a.num.size(); ++i) {
+            ans.num[i] = a.num[i] * b;
+        }
+
         BigInt::CarryProcess(ans.num);
         BigInt::RemoveTrailingZero(ans.num);
         return ans;
     }
 
     friend BigInt operator/(const BigInt& a, const BigInt& b) {
-        BigInt ans;
-        ans.negative = a.negative ^ b.negative;
-        ans.num = BigInt::Division(a.num, b.num).first;
-        return ans;
+        return {};
     }
 
     friend BigInt operator%(const BigInt& a, const BigInt& b) {
-        BigInt ans;
-        ans.num = BigInt::Division(a.num, b.num).second;
-        return ans;
+        return {};
+    }
+
+    friend BigInt operator/(const BigInt& a, int b) {
+        return {};
+    }
+
+    friend int operator%(const BigInt& a, int b) {
+        return {};
     }
 };
 ```
