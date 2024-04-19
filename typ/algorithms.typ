@@ -448,7 +448,7 @@ void RemoveTrailingZero(std::vector<int>& n) {
 ===== 完整代码
 ```cpp
 class BigInt {
-    using DivAns = std::pair<BigInt, BigInt>;
+    using DivAns = std::pair<std::vector<int>, std::vector<int>>;
 private:
     std::vector<int> num;
     bool negative;
@@ -473,14 +473,21 @@ private:
         for (int i = 0; i < a.size(); ++i) {
             ans[i] = a[i] + b[i];
         }
-        CarryProcess(ans);
-        RemoveTrailingZero(ans);
         return ans;
     }
 
-    // static DivAns Division(const BigInt& a, const BigInt& b) {
+    static std::vector<int> Subtract(const std::vector<int>& a, const std::vector<int>& b) {
+        std::vector<int> ans(std::max(a.size(), b.size()));
+        for (int i = 0; i < a.size(); ++i) {
+            ans[i] = a[i] - b[i];
+        }
+        return ans;
+    }
 
-    // }
+    static DivAns Division(const std::vector<int>& a, const std::vector<int>& b) {
+        DivAns ans;
+        return ans;
+    }
 
 public:
     BigInt(bool neg = false) : negative(neg) {}
@@ -525,26 +532,48 @@ public:
         return is;
     }
 
-    // friend BigInt operator+(const BigInt& a, const BigInt& b) {
-    //     BigInt ans;
-    // }
+    friend BigInt operator+(const BigInt& a, const BigInt& b) {
+        BigInt ans;
+    
+        BigInt::CarryProcess(ans.num);
+        BigInt::RemoveTrailingZero(ans.num);
+        return ans;
+    }
 
-    // friend BigInt operator-(const BigInt& a, const BigInt& b) {
-        
-    // }
+    friend BigInt operator-(const BigInt& a, const BigInt& b) {
+        BigInt ans;
 
-    // friend BigInt operator*(const BigInt& a, const BigInt& b) {
-    //     BigInt ans;
-    //     ans.negative = a.negative ^ b.negative;
-    // }
+        BigInt::CarryProcess(ans.num);
+        BigInt::RemoveTrailingZero(ans.num);
+        return ans;   
+    }
 
-    // friend BigInt operator/(const BigInt& a, const BigInt& b) {
-    //     return Division(a, b).first;
-    // }
+    friend BigInt operator*(const BigInt& a, const BigInt& b) {
+        BigInt ans;
+        ans.negative = a.negative ^ b.negative;
+        ans.num.resize(a.num.size() + b.num.size());
+        for (int i = 0; i < a.num.size(); ++i) {
+            for (int j = 0; j < b.num.size(); ++j) {
+                ans.num[i + j] += a.num[i] * b.num[j];
+            }
+        }
+        BigInt::CarryProcess(ans.num);
+        BigInt::RemoveTrailingZero(ans.num);
+        return ans;
+    }
 
-    // friend BigInt operator%(const BigInt& a, const BigInt& b) {
-    //     return Division(a, b).second;
-    // }
+    friend BigInt operator/(const BigInt& a, const BigInt& b) {
+        BigInt ans;
+        ans.negative = a.negative ^ b.negative;
+        ans.num = BigInt::Division(a.num, b.num).first;
+        return ans;
+    }
+
+    friend BigInt operator%(const BigInt& a, const BigInt& b) {
+        BigInt ans;
+        ans.num = BigInt::Division(a.num, b.num).second;
+        return ans;
+    }
 };
 ```
 === 高精度浮点数
