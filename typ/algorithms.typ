@@ -446,7 +446,7 @@ void RemoveTrailingZero(std::vector<int>& n) {
 
     设$q$为$a div b$的商，$r$为$a div b$的余数，要求$r >= 0$，且$b != 0$
 
-    $|q|$为$|a| div |b|$的商，$|r|$为$|a| div |b|$的余数，当$r < 0$时需要修改$q, r$使得$r$满足$r >= 0$
+    $|q|$为$|a| div |b|$的商，$|r|$为$|a| div |b|$的余数，当$r < 0$时需要修正$q, r$使得$r$满足$r >= 0$
     
     当$a >= 0 and b >= 0$时，$q >= 0, r >= 0$
     
