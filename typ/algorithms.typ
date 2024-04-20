@@ -426,7 +426,7 @@ void RemoveTrailingZero(std::vector<int>& n) {
 
     当$a >= 0 and b >= 0$或$a < 0 and b < 0$时，$|a n s| = |a| + |b|$，$a n s$的符号与$a$相同
 
-    当$a >= 0 and b < 0$或$a < 0 and b >= 0$时，若$|a| > |b|$，则$|a n s| = |a| - |b|$，$a n s$的符号与$a$相同，若$|a| < |b|$, 则$|a n s| = |b| - |a|$，$a n s$的符号与$a$相反
+    当$a >= 0 and b < 0$或$a < 0 and b >= 0$时，若$|a| >= |b|$，则$|a n s| = |a| - |b|$，$a n s$的符号与$a$相同，若$|a| < |b|$, 则$|a n s| = |b| - |a|$，$a n s$的符号与$a$相反
 
 + 减法
 
@@ -434,7 +434,7 @@ void RemoveTrailingZero(std::vector<int>& n) {
 
     当$a >= 0 and b < 0$或$a < 0 and b >= 0$时，$|a n s| = |a| + |b|$，$a n s$的符号与$a$相同
 
-    当$a >= 0 and b >= 0$或$a < 0 and b < 0$时，若$|a| > |b|$，则$|a n s| = |a| - |b|$，$a n s$的符号与$a$相同，若$|a| < |b|$, 则$|a n s| = |b| - |a|$，$a n s$的符号与$a$相反
+    当$a >= 0 and b >= 0$或$a < 0 and b < 0$时，若$|a| >= |b|$，则$|a n s| = |a| - |b|$，$a n s$的符号与$a$相同，若$|a| < |b|$, 则$|a n s| = |b| - |a|$，$a n s$的符号与$a$相反
 
 + 乘法
 
