@@ -145,7 +145,7 @@ bool LessThan(const std::vector<int>& a, const std::vector<int>& b) {
 
 代码实现如下
 ```cpp
-void RemoveTrailingZero(std::vector<int>& n) {
+void RemoveRZero(std::vector<int>& n) {
     while (n.size() > 1 && n.back() == 0) {
         n.pop_back();
     }
@@ -177,13 +177,13 @@ void RemoveTrailingZero(std::vector<int>& n) {
         n[i] %= 10;
     }
     ```
-    为了尽量避免运算过程中出现下标访问越界，需要引入变量```cpp carry```来保存前一位的进位，消去```cpp i + 1```，优化后的代码如下
+    为了尽量避免运算过程中出现下标访问越界，需要引入变量```cpp car```来保存前一位的进位，消去```cpp i + 1```，优化后的代码如下
     ```cpp 
-    void CarryProcess(std::vector<int>& n) {
-        int carry = 0;
+    void Carry(std::vector<int>& n) {
+        int car = 0;
         for (int i = 0; i < n.size(); ++i) {
-            n[i] += carry;
-            carry = n[i] / 10;
+            n[i] += car;
+            car = n[i] / 10;
             n[i] %= 10;
         }
     }
@@ -229,11 +229,11 @@ void RemoveTrailingZero(std::vector<int>& n) {
     
     改进后的进位处理代码实现如下
     ```cpp
-    void CarryProcess(std::vector<int>& n) {
-        int carry = 0;
+    void Carry(std::vector<int>& n) {
+        int car = 0;
         for (int i = 0; i < n.size(); ++i) {
-            n[i] += carry;
-            carry = n[i] / 10 - (n[i] % 10 < 0);
+            n[i] += car;
+            car = n[i] / 10 - (n[i] % 10 < 0);
             n[i] = n[i] % 10 + (n[i] % 10 < 0) * 10;
         }
     }
@@ -296,7 +296,7 @@ void RemoveTrailingZero(std::vector<int>& n) {
     
     代码实现如下
     ```cpp
-    int GetDigits(int n) {
+    int GetDigit(int n) {
         if (n == 0) {
             return 1;
         }
@@ -311,13 +311,13 @@ void RemoveTrailingZero(std::vector<int>& n) {
     std::string s; // 大整数
     int b; // 较小数
     std::cin >> s >> b;
-    std::vector<int> a = Transform(s), ans(s.size() + GetDigits(b));
+    std::vector<int> a = Transform(s), ans(s.size() + GetDigit(b));
 
     for (int i = 0; i < s.size(); ++i) {
         ans[i] = a[i] * b;
     }
-    CarryProcess(ans);
-    RemoveTrailingZero(ans);
+    Carry(ans);
+    RemoveRZero(ans);
     for (int i = ans.size() - 1; i >= 0; --i) {
         std::cout << ans[i];
     }
@@ -359,23 +359,23 @@ void RemoveTrailingZero(std::vector<int>& n) {
     
     例如，在计算$q_3$时，不断从$a_5a_4a_3$中减去$b_2b_1b_0$，差记录在$r$中，当$r < b_2b_1b_0$时，停止减法，此时的$r$就是我们要求的$r'_2r'_1r'_0$，减法的次数就是我们要求的$q_3$，该过程涉及到大整数$r, b$的比较(_@比较大整数[]_)和减法(_@大整数减法[]_)，因此$r, b$数组的长度都应当为$n + 1$
 
-    此外，除法竖式计算是从高位向低位的，这与乘法(_@大整数乘法[]_)相反，在存储$q, r$时需要特别注意这一点
+    此外，除法竖式是从高位向低位计算的，这与乘法(_@大整数乘法[]_)相反，在存储$q, r$时需要特别注意这一点
 
     综上所述，大整数$a, b$的除法代码实现如下
     ```cpp
-    for (int i = 0; i < a.size(); ++i) {
+    for (int i = a.size() - 1; i >= 0; --i) {
         // 将 r 数组的元素整体右移 1 位，将 r[0]，即 r 的末尾空出来，用于计算q[i]之前在末尾追加 1 位 a[i]
         for (int j = r.size() - 1; j >= 1; --j) {
             r[j] = r[j - 1];
         }
-        r[0] = a[a.size() - 1 - i];
+        r[0] = a[i];
 
         while (!LessThan(r, b)) {
-            for (int i = 0; i < r.size(); ++i) {
-                r[i] -= b[i];
+            for (int j = 0; j < r.size(); ++j) {
+                r[j] -= b[j];
             }
-            CarryProcess(r);
-            ++q[a.size() - 1 - i];
+            Carry(r);
+            ++q[i];
         } // 计算
     }
     ```
@@ -402,13 +402,13 @@ void RemoveTrailingZero(std::vector<int>& n) {
     int r = 0; // 余数
     std::vector<int> a = Transform(s), q(a.size());
 
-    for (int i = 0; i < a.size(); ++i) {
-        r = r * 10 + a[a.size() - 1 - i];
-        q[a.size() - 1 - i] = r / b;
+    for (int i = a.size() - 1; i >= 0; --i) {
+        r = r * 10 + a[i];
+        q[i] = r / b;
         r %= b;
     }
 
-    RemoveTrailingZero(q);
+    RemoveRZero(q);
     for (int i = q.size() - 1; i >= 0; --i) {
         std::cout << q[i];
     }
@@ -462,7 +462,7 @@ private:
     std::vector<int> num;
     bool negative;
 
-    static int GetDigits(int n) {
+    static int GetDigit(int n) {
         n = std::abs(n);
         if (n == 0) {
             return 1;
@@ -475,16 +475,16 @@ private:
         return cnt;
     }
 
-    static void CarryProcess(std::vector<int>& n) {
-        int carry = 0;
+    static void Carry(std::vector<int>& n) {
+        int car = 0;
         for (int i = 0; i < n.size(); ++i) {
-            n[i] += carry;
-            carry = n[i] / 10 - (n[i] % 10 < 0);
+            n[i] += car;
+            car = n[i] / 10 - (n[i] % 10 < 0);
             n[i] = n[i] % 10 + (n[i] % 10 < 0) * 10;
         }
     }
 
-    static void RemoveTrailingZero(std::vector<int>& n) {
+    static void RemoveRZero(std::vector<int>& n) {
         while (n.size() > 1 && n.back() == 0) {
             n.pop_back();
         }
@@ -554,8 +554,8 @@ public:
     
 
 
-        BigInt::CarryProcess(ans.num);
-        BigInt::RemoveTrailingZero(ans.num);
+        BigInt::Carry(ans.num);
+        BigInt::RemoveRZero(ans.num);
         return ans;
     }
 
@@ -564,8 +564,8 @@ public:
 
 
 
-        BigInt::CarryProcess(ans.num);
-        BigInt::RemoveTrailingZero(ans.num);
+        BigInt::Carry(ans.num);
+        BigInt::RemoveRZero(ans.num);
         return ans;   
     }
 
@@ -579,22 +579,22 @@ public:
             }
         }
 
-        BigInt::CarryProcess(ans.num);
-        BigInt::RemoveTrailingZero(ans.num);
+        BigInt::Carry(ans.num);
+        BigInt::RemoveRZero(ans.num);
         return ans;
     }
 
     friend BigInt operator*(const BigInt& a, int b) { 
         BigInt ans(a.negative ^ (b < 0));
         b = std::abs(b);
-        ans.num.resize(a.num.size() + BigInt::GetDigits(b));
+        ans.num.resize(a.num.size() + BigInt::GetDigit(b));
 
         for (int i = 0; i < a.num.size(); ++i) {
             ans.num[i] = a.num[i] * b;
         }
 
-        BigInt::CarryProcess(ans.num);
-        BigInt::RemoveTrailingZero(ans.num);
+        BigInt::Carry(ans.num);
+        BigInt::RemoveRZero(ans.num);
         return ans;
     }
 
