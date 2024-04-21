@@ -387,7 +387,7 @@ void RemoveRZero(std::vector<int>& n) {
 
     此外，除法竖式是从高位向低位计算的，这与乘法(_@大整数乘法[]_)相反，在存储$q, r$时需要特别注意这一点
 
-    综上所述，大整数$a, b$的除法代码实现如下
+    综上所述，大整数$a, b$的除法代码实现如下(未统一$r, b$位数)
     ```cpp
     struct DivisionResult {
         std::vector<int> q, r;
