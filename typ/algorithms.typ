@@ -93,15 +93,15 @@ bfs
   
 设正整数$ a &:= 123456789987654321123456789,\ b &:= 3875109875159571357835819359817 $依次输入$a, b$，则将$a, b$转换为数组存储的代码实现如下
 ```cpp
-std::vector<int> Transform(const std::string& numStr, int size = 0) {
-    std::vector<int> num(numStr.size());
-    for (int i = numStr.size() - 1; i >= 0; --i) {
-        num[numStr.size() - 1 - i] = numStr[i] - '0';
+std::vector<int> Transform(const std::string& nStr, int size = 0) {
+    std::vector<int> n(nStr.size());
+    for (int i = 0; i < nStr.size(); ++i) {
+        n[i] = nStr[nStr.size() - 1 - i] - '0';
     }
     if (size) {
-        num.resize(size);
+        n.resize(size);
     }
-    return num;
+    return n;
 }
 
 std::string aStr, bStr;
@@ -119,21 +119,24 @@ std::vector<int> a = Transform(aStr, k), b = Transform(bStr, k);
 // b: 7 1 8 9 5 3 9 1 8 5 3 8 7 5 3 1 7 5 9 5 1 5 7 8 9 0 1 5 7 8 3
 ```
 ==== 比较大整数 <比较大整数>
-某些情况下，我们需要比较两个大整数$a, b$的大小关系
+某些情况下，我们需要比较两个大整数$a, b$的大小关系，其中$a, b$均为非负整数
 
 如果$a, b$位数不同，显然位数少的数更小，如果$a, b$位数相同，那么从高位到低位，找到的第一对不相等的$a_i, b_i$的大小关系就是$a, b$的大小关系
 
-以小于关系为例，小于关系的代码实现如下
+下列_compare_函数中，返回值$-1, 0, 1$分别表示$a < b, a = b, a > b$
 ```cpp
-bool LessThan(const std::vector<int>& a, const std::vector<int>& b) {
+int Compare(const std::vector<int>& a, const std::vector<int>& b) {
     if (a.size() == b.size()) {
         for (int i = a.size() - 1; i >= 0; --i) {
             if (a[i] != b[i]) {
-                return a[i] < b[i];
+                if (a[i] < b[i]) { return -1 };
+                if (a[i] > b[i]) { return 1 };
             }
         }
+        return 0;
     }
-    return a.size() < b.size();
+    if (a.size() < b.size()) { return -1 };
+    return 1;
 }
 ```
 ==== 添加或删除大整数的前导$0$ <添加或删除大整数的前导0>
@@ -177,13 +180,13 @@ void RemoveRZero(std::vector<int>& n) {
         n[i] %= 10;
     }
     ```
-    为了尽量避免运算过程中出现下标访问越界，需要引入变量```cpp car```来保存前一位的进位，消去```cpp i + 1```，优化后的代码如下
+    为了尽量避免运算过程中出现下标访问越界，需要引入变量```cpp carry```来保存前一位的进位，消去```cpp i + 1```，优化后的代码如下
     ```cpp 
     void Carry(std::vector<int>& n) {
-        int car = 0;
+        int carry = 0;
         for (int i = 0; i < n.size(); ++i) {
-            n[i] += car;
-            car = n[i] / 10;
+            n[i] += carry;
+            carry = n[i] / 10;
             n[i] %= 10;
         }
     }
@@ -230,10 +233,10 @@ void RemoveRZero(std::vector<int>& n) {
     改进后的进位处理代码实现如下
     ```cpp
     void Carry(std::vector<int>& n) {
-        int car = 0;
+        int carry = 0;
         for (int i = 0; i < n.size(); ++i) {
-            n[i] += car;
-            car = n[i] / 10 - (n[i] % 10 < 0);
+            n[i] += carry;
+            carry = n[i] / 10 - (n[i] % 10 < 0);
             n[i] = n[i] % 10 + (n[i] % 10 < 0) * 10;
         }
     }
@@ -476,10 +479,10 @@ private:
     }
 
     static void Carry(std::vector<int>& n) {
-        int car = 0;
+        int carry = 0;
         for (int i = 0; i < n.size(); ++i) {
-            n[i] += car;
-            car = n[i] / 10 - (n[i] % 10 < 0);
+            n[i] += carry;
+            carry = n[i] / 10 - (n[i] % 10 < 0);
             n[i] = n[i] % 10 + (n[i] % 10 < 0) * 10;
         }
     }
