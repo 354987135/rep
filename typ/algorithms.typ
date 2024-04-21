@@ -123,19 +123,19 @@ std::vector<int> a = Transform(aStr, k), b = Transform(bStr, k);
 
 如果$a, b$位数不同，显然位数少的数更小，如果$a, b$位数相同，那么从高位到低位，找到的第一对不相等的$a_i, b_i$的大小关系就是$a, b$的大小关系
 
-下列_compare_函数中，返回值$-1, 0, 1$分别表示$a < b, a = b, a > b$
+下列_Compare_函数中，返回值$-1, 0, 1$分别表示$a < b, a = b, a > b$
 ```cpp
 int Compare(const std::vector<int>& a, const std::vector<int>& b) {
     if (a.size() == b.size()) {
         for (int i = a.size() - 1; i >= 0; --i) {
             if (a[i] != b[i]) {
-                if (a[i] < b[i]) { return -1 };
-                if (a[i] > b[i]) { return 1 };
+                if (a[i] < b[i]) { return -1; };
+                if (a[i] > b[i]) { return 1; };
             }
         }
         return 0;
     }
-    if (a.size() < b.size()) { return -1 };
+    if (a.size() < b.size()) { return -1; };
     return 1;
 }
 ```
@@ -161,15 +161,22 @@ void RemoveRZero(std::vector<int>& n) {
 
     设$a n s := a + b$，其中$a, b$为非负整数，且位数至多为$k$位
 
-    两个至多$k$位的非负整数相加，和的位数至多为$k + 1$位，因此，$a n s$数组的长度应当为$k + 1$，$a, b$数组的长度应当统一为$k$，初始化代码见(_@大整数的表示[]_)
+    两个至多$k$位的非负整数相加，和的位数至多为$k + 1$位，因此，$a n s$数组的长度应当为$k + 1$，$a, b$数组的长度可以为各自位数，或统一为$k$，初始化代码见(_@大整数的表示[]_)
   
 + 运算过程
 
-    模拟加法竖式，先将$a_i, b_i$逐位相加，即$a n s_i := a_i + b_i$，逐位相加的代码实现如下
+    模拟加法竖式，先将$a_i, b_i$逐位相加，即$a n s_i := a_i + b_i$，逐位相加的代码实现如下(未统一$a, b$位数)
     ```cpp
-    for (int i = 0; i < k; ++i) { 
-        ans[i] = a[i] + b[i]; 
-    } 
+    std::vector<int> Add(const std::vector<int>& a, const std::vector<int>& b) {
+        std::vector<int> ans(std::max(a.size(), b.size()) + 1);
+        for (int i = 0; i < a.size(); ++i) { 
+            ans[i] += a[i]; 
+        } 
+        for (int i = 0; i < b.size(); ++i) { 
+            ans[i] += b[i]; 
+        }
+        return ans; 
+    }
     ```
     在这一过程中会出现$a n s_i > 9$的情况，得到形如$n = 1 space 3 space 46 space 8$的数，其中$n_1 = 46$，这并不是我们熟知的标准十进制表示，实际上它等价于$n' = 1 space 7 space 6 space 8$，因为$46 times 10^1 = 4 times 10^2 + 6 times 10^1$，将$4$加到$n_2$上，就可以得到$n'$
     
@@ -204,7 +211,7 @@ void RemoveRZero(std::vector<int>& n) {
 
     设$a n s := a - b$，其中$a, b$为非负整数，且位数至多为$k$位
 
-    两个至多$k$位的非负整数相减，差的位数至多为$k$位，因此，$a n s, a, b$数组的长度都应当统一为$k$，初始化代码见(_@大整数的表示[]_)
+    两个至多$k$位的非负整数相减，差的位数至多为$k$位，因此，$a n s$数组的长度应当为$k$，$a, b$数组的长度可以为各自位数，或统一为$k$，初始化代码见(_@大整数的表示[]_)
 
 + 运算过程
 
@@ -214,16 +221,23 @@ void RemoveRZero(std::vector<int>& n) {
     代码实现如下
     ```cpp
     bool negative = false; // 标记差是否为负数
-    if (LessThan(a, b)) {
+    if (Compare(a, b) < 0) {
         std::swap(a, b);
         negative = true;
     }
     ```
-    接下来，先将$a_i, b_i$逐位相减，即$a n s_i := a_i - b_i$，逐位相减的代码实现如下
+    接下来，先将$a_i, b_i$逐位相减，即$a n s_i := a_i - b_i$，逐位相减的代码实现如下(未统一$a, b$位数)
     ```cpp
-    for (int i = 0; i < k; ++i) { 
-        ans[i] = a[i] - b[i]; 
-    } 
+    std::vector<int> Subtract(const std::vector<int>& a, const std::vector<int>& b) {
+        std::vector<int> ans(std::max(a.size(), b.size()));
+        for (int i = 0; i < a.size(); ++i) { 
+            ans[i] += a[i]; 
+        } 
+        for (int i = 0; i < b.size(); ++i) {
+            ans[i] -= b[i];
+        }
+        return ans;
+    }
     ```
   
     在这一过程中会出现$a n s_i < 0$的情况，得到形如$n = 1 space 3 space -23 space 8$的数，其中$n_1 = -23$，和加法类似(_@大整数加法[] - (2. 运算过程)_)，它等价于$n' = 1 space 0 space 7 space 8$，因为$-23 times 10^1 = -3 times 10^2 + 7 times 10^1 $，将$-3$加到$n_2$上，就可以得到$n'$，不难看出，借位相当于负的进位，当$n_i < 0$时，$n_i$到$n'_i$的转换和$n_i > 9$的情况是相同的，减法和借位也可以分开处理
@@ -276,10 +290,14 @@ void RemoveRZero(std::vector<int>& n) {
 
     因此，计算$a times b$就是模拟乘法竖式，先得到未处理进位的积$c$，再像加法一样处理进位(_@大整数加法[]_)，就可以得到最终的结果$a n s$，计算$c$的代码实现如下
     ```cpp
-    for (int i = 0; i < m; ++i) {
-        for (int j = 0; j < n; ++j) {
-            ans[i + j] += a[i] * b[j];
+    std::vector<int> Multiply(const std::vector<int>& a, const std::vector<int>& b) {
+        std::vector<int> ans(a.size() + b.size());
+        for (int i = 0; i < a.size(); ++i) {
+            for (int j = 0; j < b.size(); ++j) {
+                ans[i + j] += a[i] * b[j];
+            }
         }
+        return ans;
     }
     ```
 
@@ -311,14 +329,19 @@ void RemoveRZero(std::vector<int>& n) {
         return cnt;
     }
 
+    std::vector<int> Multiply(const std::vector<int>& a, int b) {
+        std::vector<int> ans(a.size() + GetDigit(b));
+        for (int i = 0; i < a.size(); ++i) {
+            ans[i] = a[i] * b;
+        }
+        return ans;
+    }
+
     std::string s; // 大整数
     int b; // 较小数
     std::cin >> s >> b;
-    std::vector<int> a = Transform(s), ans(s.size() + GetDigit(b));
-
-    for (int i = 0; i < s.size(); ++i) {
-        ans[i] = a[i] * b;
-    }
+    std::vector<int> a = Transform(s);
+    std::vector<int> ans = Multiply(a, b);
     Carry(ans);
     RemoveRZero(ans);
     for (int i = ans.size() - 1; i >= 0; --i) {
@@ -360,26 +383,32 @@ void RemoveRZero(std::vector<int>& n) {
 
     我们知道，商实际上表示的是被除数中至多能拆分出多少个除数，据此，我们可以把除法试商转化为多次减法，记录下被除数在大于$0$的前提下至多能减去多少次除数，这个次数就是被除数除以除数的商
     
-    例如，在计算$q_3$时，不断从$a_5a_4a_3$中减去$b_2b_1b_0$，差记录在$r$中，当$r < b_2b_1b_0$时，停止减法，此时的$r$就是我们要求的$r'_2r'_1r'_0$，减法的次数就是我们要求的$q_3$，该过程涉及到大整数$r, b$的比较(_@比较大整数[]_)和减法(_@大整数减法[]_)，因此$r, b$数组的长度都应当为$n + 1$
+    例如，在计算$q_3$时，不断从$a_5a_4a_3$中减去$b_2b_1b_0$，差记录在$r$中，当$r < b_2b_1b_0$时，停止减法，此时的$r$就是我们要求的$r'_2r'_1r'_0$，减法的次数就是我们要求的$q_3$，该过程涉及到大整数$r, b$的比较(_@比较大整数[]_)和减法(_@大整数减法[]_)，因此$r$数组的长度应当为$n + 1$，$b$数组的长度可与$r$统一，也可为$b$的位数$n$，如果设置$b$数组的长度为$n$，在比较$r, b$时需要注意比较的位数，当$r$的最高位为$0$时，该$0$不应该参与比较
 
     此外，除法竖式是从高位向低位计算的，这与乘法(_@大整数乘法[]_)相反，在存储$q, r$时需要特别注意这一点
 
     综上所述，大整数$a, b$的除法代码实现如下
     ```cpp
-    for (int i = a.size() - 1; i >= 0; --i) {
-        // 将 r 数组的元素整体右移 1 位，将 r[0]，即 r 的末尾空出来，用于计算q[i]之前在末尾追加 1 位 a[i]
-        for (int j = r.size() - 1; j >= 1; --j) {
-            r[j] = r[j - 1];
-        }
-        r[0] = a[i];
+    struct DivisionResult {
+        std::vector<int> q, r;
+    };
 
-        while (!LessThan(r, b)) {
-            for (int j = 0; j < r.size(); ++j) {
-                r[j] -= b[j];
+    DivisionResult Divide(const std::vector<int>& a, const std::vector<int>& b) {
+        std::vector<int> q(a.size()), r(b.size() + 1);
+        for (int i = a.size() - 1; i >= 0; --i) {
+            for (int j = r.size() - 1; j >= 1; --j) {
+                r[j] = r[j - 1];
             }
-            Carry(r);
-            ++q[i];
-        } // 计算
+            r[0] = a[i];
+            while (Compare(r, b, b.size()) >= 0) {
+                for (int j = 0; j < b.size(); ++j) {
+                    r[j] -= b[j];
+                }
+                Carry(r);
+                ++q[i];
+            }
+        }
+        return {q, r};
     }
     ```
 
@@ -399,23 +428,32 @@ void RemoveRZero(std::vector<int>& n) {
 
     代码实现如下
     ```cpp
+    struct DivisionResult {
+        std::vector<int> q;
+        int r;
+    };
+
+    DivisionResult Divide(const std::vector<int>& a, int b) {
+        std::vector<int> q(a.size());
+        int r = 0;
+        for (int i = a.size() - 1; i >= 0; --i) {
+            r = r * 10 + a[i];
+            q[i] = r / b;
+            r %= b;
+        }
+        return {q, r};
+    }
+
     std::string s; // 大整数
     int b; // 较小数
     std::cin >> s >> b;
-    int r = 0; // 余数
-    std::vector<int> a = Transform(s), q(a.size());
-
-    for (int i = a.size() - 1; i >= 0; --i) {
-        r = r * 10 + a[i];
-        q[i] = r / b;
-        r %= b;
-    }
-
-    RemoveRZero(q);
+    std::vector<int> a = Transform(s);
+    DivisionResult ans = Divide(a, b);
+    RemoveRZero(ans.q);
     for (int i = q.size() - 1; i >= 0; --i) {
         std::cout << q[i];
     }
-    std::cout << '\n' << r;
+    std::cout << '\n' << ans.r;
     ```
 ==== 大整数类 <大整数类>
 ===== 基本设计
@@ -455,15 +493,21 @@ void RemoveRZero(std::vector<int>& n) {
     
     当$a >= 0 and b < 0$时，$q < 0, r >= 0$
 
-    当$a < 0 and b >= 0$时，$q < 0, r < 0$，需要将$r$加上$b$，同时将$q$减去$1$，使得$r >= 0$
+    当$a < 0 and b >= 0$时，$q < 0, r < 0$，需要将$r$加上$b$，即$r' = |b| - |r|$，同时将$q$减去$1$，使得$r >= 0$
 
-    当$a < 0 and b < 0$时，$q >= 0, r < 0$，需要将$r$减去$b$，同时将$q$加上$1$，使得$r >= 0$
+    当$a < 0 and b < 0$时，$q >= 0, r < 0$，需要将$r$减去$b$，即$r' = |b| - |r|$，同时将$q$加上$1$，使得$r >= 0$
 ===== 完整代码
 ```cpp
 class BigInt {
 private:
     std::vector<int> num;
     bool negative;
+
+    static BigInt Abs(const BigInt& n) {
+        BigInt abs;
+        abs.num = n.num;
+        return abs;
+    }
 
     static int GetDigit(int n) {
         n = std::abs(n);
@@ -493,10 +537,27 @@ private:
         }
     }
 
+    static int Compare(const std::vector<int>& a, const std::vector<int>& b) {
+        if (a.size() == b.size()) {
+            for (int i = a.size() - 1; i >= 0; --i) {
+                if (a[i] != b[i]) {
+                    if (a[i] < b[i]) { return -1; };
+                    if (a[i] > b[i]) { return 1; };
+                }
+            }
+            return 0;
+        }
+        if (a.size() < b.size()) { return -1; };
+        return 1;
+    }
+
     static std::vector<int> Add(const std::vector<int>& a, const std::vector<int>& b) {
         std::vector<int> ans(std::max(a.size(), b.size()) + 1);
         for (int i = 0; i < a.size(); ++i) {
-            ans[i] = a[i] + b[i];
+            ans[i] += a[i];
+        }
+        for (int i = 0; i < b.size(); ++i) {
+            ans[i] += b[i];
         }
         return ans;
     }
@@ -504,18 +565,21 @@ private:
     static std::vector<int> Subtract(const std::vector<int>& a, const std::vector<int>& b) {
         std::vector<int> ans(std::max(a.size(), b.size()));
         for (int i = 0; i < a.size(); ++i) {
-            ans[i] = a[i] - b[i];
+            ans[i] += a[i];
+        }
+        for (int i = 0; i < b.size(); ++i) {
+            ans[i] -= b[i];
         }
         return ans;
     }
 
 public:
     BigInt(bool neg = false) : negative(neg) {}
-    BigInt(const std::string& s, int size = 0) {
+    BigInt(const std::string& s) {
         negative = s[0] == '-';
-        num.resize(size ? size : s.size() - negative);
-        for (int i = s.size() - 1; i >= negative; --i) {
-            num[s.size() - 1 - i] = s[i] - '0';
+        num.resize(s.size() - negative);
+        for (int i = 0; i < s.size() - negative; ++i) {
+            num[i] = s[s.size() - 1 - i] - '0';
         }
     }
     
@@ -523,16 +587,10 @@ public:
         if (a.negative ^ b.negative) {
             return a.negative;
         }
-
-        if (a.num.size() == b.num.size()) {
-            for (int i = a.num.size() - 1; i >= 0; --i) {
-                if (a.num[i] != b.num[i]) {
-                    return a.num[i] < b.num[i] ^ a.negative;
-                }
-            }
-            return false;
+        if (a.negative) {
+            return Compare(a.num, b.num) > 0;
         }
-        return a.num.size() < b.num.size() ^ a.negative;
+        return Compare(a.num, b.num) < 0;
     }
 
     friend std::ostream& operator<<(std::ostream& os, const BigInt& n) {
@@ -554,10 +612,21 @@ public:
 
     friend BigInt operator+(const BigInt& a, const BigInt& b) {
         BigInt ans;
-    
 
-
+        if (!(a.negative ^ b.negative)) {
+            ans.negative = a.negative;
+            ans.num = BigInt::Add(a.num, b.num);
+        } else {
+            if (BigInt::Abs(a) < BigInt::Abs(b)) {
+                ans.negative = !a.negative;
+                ans.num = BigInt::Subtract(b.num, a.num);
+            } else {
+                ans.negative = a.negative;
+                ans.num = BigInt::Subtract(a.num, b.num);
+            }
+        }
         BigInt::Carry(ans.num);
+
         BigInt::RemoveRZero(ans.num);
         return ans;
     }
@@ -565,9 +634,20 @@ public:
     friend BigInt operator-(const BigInt& a, const BigInt& b) {
         BigInt ans;
 
-
-
+        if (a.negative ^ b.negative) {
+            ans.negative = a.negative;
+            ans.num = BigInt::Add(a.num, b.num);
+        } else {
+            if (BigInt::Abs(a) < BigInt::Abs(b)) {
+                ans.negative = !a.negative;
+                ans.num = BigInt::Subtract(b.num, a.num);
+            } else {
+                ans.negative = a.negative;
+                ans.num = BigInt::Subtract(a.num, b.num);
+            }
+        }
         BigInt::Carry(ans.num);
+
         BigInt::RemoveRZero(ans.num);
         return ans;   
     }
@@ -581,8 +661,8 @@ public:
                 ans.num[i + j] += a.num[i] * b.num[j];
             }
         }
-
         BigInt::Carry(ans.num);
+
         BigInt::RemoveRZero(ans.num);
         return ans;
     }
@@ -595,26 +675,110 @@ public:
         for (int i = 0; i < a.num.size(); ++i) {
             ans.num[i] = a.num[i] * b;
         }
-
         BigInt::Carry(ans.num);
+
         BigInt::RemoveRZero(ans.num);
         return ans;
     }
 
     friend BigInt operator/(const BigInt& a, const BigInt& b) {
-        return {};
+        BigInt q, r;
+        q.num.resize(a.num.size());
+        r.num.resize(b.num.size() + 1);
+
+        for (int i = a.num.size() - 1; i >= 0; --i) {
+            for (int j = r.num.size() - 1; j >= 1; --j) {
+                r.num[j] = r.num[j - 1];
+            }
+            r.num[0] = a.num[i];
+            while (BigInt::Compare(r.num, b.num) >= 0) {
+                for (int j = 0; j < b.num.size(); ++j) {
+                    r.num[j] -= b.num[j];
+                }
+                BigInt::Carry(r.num);
+                ++q.num[i];
+            }
+        }
+
+        if (!a.negative) {
+            q.negative = b.negative;
+        } else {
+            if (!b.negative) {
+                q.negative = true;
+                q.num[0] -= 1;
+            } else {
+                q.num[0] += 1;
+            }
+            BigInt::Carry(q.num);
+        }
+
+        BigInt::RemoveRZero(q.num);
+        return q;
     }
 
     friend BigInt operator%(const BigInt& a, const BigInt& b) {
-        return {};
+        BigInt r;
+        r.num.resize(b.num.size() + 1);
+
+        for (int i = a.num.size() - 1; i >= 0; --i) {
+            for (int j = r.num.size() - 1; j >= 1; --j) {
+                r.num[j] = r.num[j - 1];
+            }
+            r.num[0] = a.num[i];
+            while (BigInt::Compare(r.num, b.num) >= 0) {
+                for (int j = 0; j < b.num.size(); ++j) {
+                    r.num[j] -= b.num[j];
+                }
+                BigInt::Carry(r.num);
+            }
+        }
+
+        if (a.negative) {
+            r.num = BigInt::Subtract(b.num, r.num);
+            BigInt::Carry(r.num);
+        }
+
+        BigInt::RemoveRZero(r.num);
+        return r;
     }
 
     friend BigInt operator/(const BigInt& a, int b) {
-        return {};
+        BigInt q;
+        q.num.resize(a.num.size());
+        int r = 0;
+        
+        for (int i = a.num.size() - 1; i >= 0; --i) {
+            r = r * 10 + a.num[i];
+            q.num[i] = r / b;
+            r %= b;
+        }
+
+        if (!a.negative) {
+            q.negative = b < 0;
+        } else {
+            if (b > 0) {
+                q.negative = true;
+                q.num[0] -= 1;
+            } else {
+                q.num[0] += 1;
+            }
+            BigInt::Carry(q.num);
+        }
+
+        BigInt::RemoveRZero(q.num);
+        return q;
     }
 
     friend int operator%(const BigInt& a, int b) {
-        return {};
+        int r = 0;
+        for (int i = a.num.size() - 1; i >= 0; --i) {
+            r = r * 10 + a.num[i];
+            r %= b;
+        }
+        if (a.negative) {
+            r = std::abs(b) - std::abs(r);
+        }
+        return r;
     }
 };
 ```
@@ -625,4 +789,3 @@ public:
 === 加法原理
 === 乘法原理
 === 容斥原理
-加减法位数修改、函数化、比较函数compare、小于关系重写
