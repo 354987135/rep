@@ -126,8 +126,13 @@ std::vector<int> a = Transform(aStr, k), b = Transform(bStr, k);
 下列_Compare_函数中，返回值$-1, 0, 1$分别表示$a < b, a = b, a > b$
 ```cpp
 int Compare(const std::vector<int>& a, const std::vector<int>& b) {
-    if (a.size() == b.size()) {
-        for (int i = a.size() - 1; i >= 0; --i) {
+    int m = a.size();
+    while (m > 1 && a[m - 1] == 0) { --m; }
+    int n = b.size();
+    while (n > 1 && b[n - 1] == 0) { --n; }
+
+    if (m == n) {
+        for (int i = m - 1; i >= 0; --i) {
             if (a[i] != b[i]) {
                 if (a[i] < b[i]) { return -1; };
                 if (a[i] > b[i]) { return 1; };
@@ -135,7 +140,7 @@ int Compare(const std::vector<int>& a, const std::vector<int>& b) {
         }
         return 0;
     }
-    if (a.size() < b.size()) { return -1; };
+    if (m < n) { return -1; };
     return 1;
 }
 ```
@@ -400,7 +405,7 @@ void RemoveRZero(std::vector<int>& n) {
                 r[j] = r[j - 1];
             }
             r[0] = a[i];
-            while (Compare(r, b, b.size()) >= 0) {
+            while (Compare(r, b) >= 0) {
                 for (int j = 0; j < b.size(); ++j) {
                     r[j] -= b[j];
                 }
@@ -457,57 +462,45 @@ void RemoveRZero(std::vector<int>& n) {
     ```
 ==== 大整数类 <大整数类>
 ===== 基本设计
-实现输入输出(```cpp >>, << ```运算符)，实现加法、减法、乘法、除法和模运算(```cpp +, -, *, /, % ```运算符)，实现比较运算(```cpp < ```运算符)，并包含对负数的处理
+实现输入输出(```cpp >>, << ```运算符)，实现加法、减法、乘法、除法和模运算(```cpp +, -, *, /, % ```运算符)，实现比较运算(```cpp ==, < ```运算符)，并包含对负数的处理
 
-每个大整数需要一个```cpp int ```数组成员倒序存储绝对值，一个```cpp bool ```变量存储正负信息
+每个大整数需要一个```cpp int ```数组成员倒序存储绝对值，一个```cpp bool ```变量存储正负信息，构造函数需要能够通过字符串构造大整数
 ===== 带负数的四则运算
 + 加法
     
-    设$a n s := a + b$
+    设$a n s$为$a + b$的和
 
-    当$a >= 0 and b >= 0$或$a < 0 and b < 0$时，$|a n s| = |a| + |b|$，$a n s$的符号与$a$相同
+    当$a >= 0 and b >= 0$或$a < 0 and b < 0$，即$a, b$同号时，$|a n s| = |a| + |b|$，$a n s$的符号与$a$相同
 
-    当$a >= 0 and b < 0$或$a < 0 and b >= 0$时，若$|a| >= |b|$，则$|a n s| = |a| - |b|$，$a n s$的符号与$a$相同，若$|a| < |b|$, 则$|a n s| = |b| - |a|$，$a n s$的符号与$a$相反
+    当$a >= 0 and b < 0$或$a < 0 and b >= 0$时，若$|a| = |b|$，则$a n s = 0$，若$|a| > |b|$，则$|a n s| = |a| - |b|$，$a n s$的符号与$a$相同，若$|a| < |b|$, 则$|a n s| = |b| - |a|$，$a n s$的符号与$a$相反
 
 + 减法
 
-    设$a n s := a - b$
+    设$a n s$为$a - b$的差
 
-    当$a >= 0 and b < 0$或$a < 0 and b >= 0$时，$|a n s| = |a| + |b|$，$a n s$的符号与$a$相同
+    当$a >= 0 and b < 0$或$a < 0 and b >= 0$，即$a, b$异号时，$|a n s| = |a| + |b|$，$a n s$的符号与$a$相同
 
-    当$a >= 0 and b >= 0$或$a < 0 and b < 0$时，若$|a| >= |b|$，则$|a n s| = |a| - |b|$，$a n s$的符号与$a$相同，若$|a| < |b|$, 则$|a n s| = |b| - |a|$，$a n s$的符号与$a$相反
+    当$a >= 0 and b >= 0$或$a < 0 and b < 0$时，若$|a| = |b|$，则$a n s = 0$，若$|a| > |b|$，则$|a n s| = |a| - |b|$，$a n s$的符号与$a$相同，若$|a| < |b|$, 则$|a n s| = |b| - |a|$，$a n s$的符号与$a$相反
 
 + 乘法
 
-    设$a n s := a * b$
+    设$a n s$为$a * b$的积
 
-    $|a n s| = |a| * |b|$，如果$a, b$同号，则$a n s$为正，否则为负
+    $|a n s| = |a| * |b|$，若$a, b$其中之一为$0$，则$a n s = 0$，如果$a, b$同号，则$a n s$为正，否则为负
 
 + 除法
 
-    设$q$为$a div b$的商，$r$为$a div b$的余数，要求$r >= 0$，且$b != 0$
-
-    $|q|$为$|a| div |b|$的商，$|r|$为$|a| div |b|$的余数，当$r < 0$时需要修正$q, r$使得$r$满足$r >= 0$
+    设$q'$为$a div b$的商，$|q|$为$|a| div |b|$的商，$r'$为$a div b$的余数，$|r|$为$|a| div |b|$的余数，其中$b != 0$
     
-    当$a >= 0 and b >= 0$时，$q >= 0, r >= 0$
-    
-    当$a >= 0 and b < 0$时，$q < 0, r >= 0$
+    当$a >= 0 and b >= 0$或$a < 0 and b < 0$时，$|q'| = |q|, |r'| = |r|$，$q$的符号为正，$r$的符号与$b$相同
 
-    当$a < 0 and b >= 0$时，$q < 0, r < 0$，需要将$r$加上$b$，即$r' = |b| - |r|$，同时将$q$减去$1$，使得$r >= 0$
-
-    当$a < 0 and b < 0$时，$q >= 0, r < 0$，需要将$r$减去$b$，即$r' = |b| - |r|$，同时将$q$加上$1$，使得$r >= 0$
+    当$a >= 0 and b < 0$或$a < 0 and b >= 0$时，$|q'| = |q| + 1, |r'| = |b| - |r|$，$q$的符号为负，$r$的符号与$b$相同
 ===== 完整代码
 ```cpp
 class BigInt {
 private:
     std::vector<int> num;
     bool negative;
-
-    static BigInt Abs(const BigInt& n) {
-        BigInt abs;
-        abs.num = n.num;
-        return abs;
-    }
 
     static int GetDigit(int n) {
         n = std::abs(n);
@@ -538,8 +531,13 @@ private:
     }
 
     static int Compare(const std::vector<int>& a, const std::vector<int>& b) {
-        if (a.size() == b.size()) {
-            for (int i = a.size() - 1; i >= 0; --i) {
+        int m = a.size();
+        while (m > 1 && a[m - 1] == 0) { --m; }
+        int n = b.size();
+        while (n > 1 && b[n - 1] == 0) { --n; }
+
+        if (m == n) {
+            for (int i = m - 1; i >= 0; --i) {
                 if (a[i] != b[i]) {
                     if (a[i] < b[i]) { return -1; };
                     if (a[i] > b[i]) { return 1; };
@@ -547,7 +545,7 @@ private:
             }
             return 0;
         }
-        if (a.size() < b.size()) { return -1; };
+        if (m < n) { return -1; };
         return 1;
     }
 
@@ -575,6 +573,7 @@ private:
 
 public:
     BigInt(bool neg = false) : negative(neg) {}
+
     BigInt(const std::string& s) {
         negative = s[0] == '-';
         num.resize(s.size() - negative);
@@ -582,17 +581,11 @@ public:
             num[i] = s[s.size() - 1 - i] - '0';
         }
     }
-    
-    friend bool operator<(const BigInt& a, const BigInt& b) {
-        if (a.negative ^ b.negative) {
-            return a.negative;
-        }
-        if (a.negative) {
-            return Compare(a.num, b.num) > 0;
-        }
-        return Compare(a.num, b.num) < 0;
-    }
 
+    BigInt(const char* s) {
+        *this = BigInt(std::string(s));
+    }
+    
     friend std::ostream& operator<<(std::ostream& os, const BigInt& n) {
         if (n.negative) {
             os << '-';
@@ -610,6 +603,42 @@ public:
         return is;
     }
 
+    friend bool operator==(const BigInt& a, const BigInt& b) {
+        return a.negative == b.negative && BigInt::Compare(a.num, b.num) == 0;
+    }
+
+    friend bool operator!=(const BigInt& a, const BigInt& b) {
+        return !(a == b);
+    }
+
+    friend bool operator<(const BigInt& a, const BigInt& b) {
+        if (a.negative ^ b.negative) {
+            return a.negative;
+        }
+        if (a.negative) {
+            return BigInt::Compare(a.num, b.num) > 0;
+        }
+        return BigInt::Compare(a.num, b.num) < 0;
+    }
+
+    friend bool operator<=(const BigInt& a, const BigInt& b) {
+        return a < b || a == b;
+    }
+
+    friend bool operator>(const BigInt& a, const BigInt& b) {
+        return a != b && !(a < b);
+    }
+
+    friend bool operator>=(const BigInt& a, const BigInt& b) {
+        return a > b || a == b;
+    }
+
+    friend BigInt operator-(const BigInt& n) {
+        BigInt ans = n;
+        ans.negative = !n.negative;
+        return ans;
+    }
+
     friend BigInt operator+(const BigInt& a, const BigInt& b) {
         BigInt ans;
 
@@ -617,12 +646,14 @@ public:
             ans.negative = a.negative;
             ans.num = BigInt::Add(a.num, b.num);
         } else {
-            if (BigInt::Abs(a) < BigInt::Abs(b)) {
+            if (BigInt::Compare(a.num, b.num) < 0) {
                 ans.negative = !a.negative;
                 ans.num = BigInt::Subtract(b.num, a.num);
-            } else {
+            } else if (BigInt::Compare(a.num, b.num) > 0){
                 ans.negative = a.negative;
                 ans.num = BigInt::Subtract(a.num, b.num);
+            } else {
+                ans.num.resize(1);
             }
         }
         BigInt::Carry(ans.num);
@@ -638,12 +669,14 @@ public:
             ans.negative = a.negative;
             ans.num = BigInt::Add(a.num, b.num);
         } else {
-            if (BigInt::Abs(a) < BigInt::Abs(b)) {
+            if (BigInt::Compare(a.num, b.num) < 0) {
                 ans.negative = !a.negative;
                 ans.num = BigInt::Subtract(b.num, a.num);
-            } else {
+            } else if (BigInt::Compare(a.num, b.num) > 0) {
                 ans.negative = a.negative;
                 ans.num = BigInt::Subtract(a.num, b.num);
+            } else {
+                ans.num.resize(1);
             }
         }
         BigInt::Carry(ans.num);
@@ -653,7 +686,10 @@ public:
     }
 
     friend BigInt operator*(const BigInt& a, const BigInt& b) {
-        BigInt ans(a.negative ^ b.negative);
+        BigInt ans;
+        if (a != BigInt("0") && b != BigInt("0")) { 
+            ans.negative = a.negative ^ b.negative;
+        }
         ans.num.resize(a.num.size() + b.num.size());
 
         for (int i = 0; i < a.num.size(); ++i) {
@@ -667,8 +703,11 @@ public:
         return ans;
     }
 
-    friend BigInt operator*(const BigInt& a, int b) { 
-        BigInt ans(a.negative ^ (b < 0));
+    friend BigInt operator*(const BigInt& a, int b) {
+        BigInt ans;
+        if (a != BigInt("0") && b != 0) {
+            ans.negative = a.negative ^ (b < 0);
+        }
         b = std::abs(b);
         ans.num.resize(a.num.size() + BigInt::GetDigit(b));
 
@@ -700,15 +739,9 @@ public:
             }
         }
 
-        if (!a.negative) {
-            q.negative = b.negative;
-        } else {
-            if (!b.negative) {
-                q.negative = true;
-                q.num[0] -= 1;
-            } else {
-                q.num[0] += 1;
-            }
+        if (a.negative ^ b.negative) {
+            q.negative = true;
+            q.num[0] += 1;
             BigInt::Carry(q.num);
         }
 
@@ -717,7 +750,7 @@ public:
     }
 
     friend BigInt operator%(const BigInt& a, const BigInt& b) {
-        BigInt r;
+        BigInt r(b.negative);
         r.num.resize(b.num.size() + 1);
 
         for (int i = a.num.size() - 1; i >= 0; --i) {
@@ -733,7 +766,7 @@ public:
             }
         }
 
-        if (a.negative) {
+        if (a.negative ^ b.negative) {
             r.num = BigInt::Subtract(b.num, r.num);
             BigInt::Carry(r.num);
         }
@@ -743,25 +776,20 @@ public:
     }
 
     friend BigInt operator/(const BigInt& a, int b) {
+        bool b_neg = b < 0;
+        b = std::abs(b);
         BigInt q;
         q.num.resize(a.num.size());
         int r = 0;
-        
         for (int i = a.num.size() - 1; i >= 0; --i) {
             r = r * 10 + a.num[i];
             q.num[i] = r / b;
             r %= b;
         }
 
-        if (!a.negative) {
-            q.negative = b < 0;
-        } else {
-            if (b > 0) {
-                q.negative = true;
-                q.num[0] -= 1;
-            } else {
-                q.num[0] += 1;
-            }
+        if (a.negative ^ b_neg) {
+            q.negative = true;
+            q.num[0] += 1;
             BigInt::Carry(q.num);
         }
 
@@ -770,15 +798,17 @@ public:
     }
 
     friend int operator%(const BigInt& a, int b) {
+        bool b_neg = b < 0;
+        b = std::abs(b);
         int r = 0;
         for (int i = a.num.size() - 1; i >= 0; --i) {
             r = r * 10 + a.num[i];
             r %= b;
         }
-        if (a.negative) {
-            r = std::abs(b) - std::abs(r);
+        if (a.negative ^ b_neg) {
+            r = b - r;
         }
-        return r;
+        return b_neg ? -r : r;
     }
 };
 ```
