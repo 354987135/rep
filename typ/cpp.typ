@@ -41,22 +41,22 @@
 
 + 反码和补码由原码变换而来，用于解决有负数参与的加减法问题，因此，反码和补码是针对负数的，非负数的原码，反码，补码都是同一个二进制数，并且与相同数值的无符号整数编码相同
 
-  设$x$为非负数，则$-x$的$k$位反码表示为$2^k - 1 - x$，即$underbrace(1...1, "k个1") - x$，相当于保持原码的符号位不变，取反全部数值位，该方法也可以完成从反码到原码的转换
+    设$x$为非负数，则$-x$的$k$位反码表示为$2^k - 1 - x$，即$underbrace(1...1, "k个1") - x$，相当于保持原码的符号位不变，取反全部数值位，该方法也可以完成从反码到原码的转换
 
-  设$x$为非负数，则$-x$的$k$位补码表示为$2^k - x$，即$1underbrace(0...0, "k个0") - x$，相当于保持原码的符号位不变，取反全部数值位并在最低位$+1$，同时忽略最高位的进位，该方法也可以完成从补码到原码的转换
+    设$x$为非负数，则$-x$的$k$位补码表示为$2^k - x$，即$1underbrace(0...0, "k个0") - x$，相当于保持原码的符号位不变，取反全部数值位并在最低位$+1$，同时忽略最高位的进位，该方法也可以完成从补码到原码的转换
 
-  补码统一了加减法，大大简化了硬件的复杂度和制造难度，因此，现在绝大多数计算机系统中都使用补码表示整数
+    补码统一了加减法，大大简化了硬件的复杂度和制造难度，因此，现在绝大多数计算机系统中都使用补码表示整数
   
 + 移码由补码变换而来，用于表示浮点数，此处不深入讨论该问题
 == 位运算的注意点
 + 位运算的操作数都是整数，实际参与位运算的是整数的补码
 
 + 位运算符共$6$个，优先级从高到低排序如下
-  + $~$
-  + $>>, <<$
-  + $\&$
-  + $arrowhead.t$
-  + $|$
+    + $~$
+    + $>>, <<$
+    + $\&$
+    + $arrowhead.t$
+    + $|$
 + 二元位运算符均具有左结合性
 == 按位逻辑运算
 === 按位非 <chapter5.2.1>
@@ -65,46 +65,46 @@
 + 记$a_i$为$a$补码的第$i$位，$~a$表示对每一个$a_i$做逻辑非运算，相当于取反$a$的每一位，因此也叫按位取反运算，例如$ ~ space & 10110011\ = & overline(01001100) $
 
 + 基本性质
-  - $~a + 1 = -a$
+    - $~a + 1 = -a$
 === 按位与
 + $\&$运算符，二元
 
 + 记$a_i,b_i$分别为$a,b$补码的第$i$位，$a space \& space b$表示对每一组$a_i,b_i$做逻辑与运算，例如$ & 10110011\ \& space & 01101101\ = & overline(00100001) $
 
 + 基本性质
-  - $a space \& space b = b space \& space a$
-  - $a space \& space (b space \& space c) = (a space \& space b) space \& space c$
-  - $a space \& space a = a$
-  - $a space \& space 0 = 0$
-  - $a space \& space ~0 = a$
+    - $a space \& space b = b space \& space a$
+    - $a space \& space (b space \& space c) = (a space \& space b) space \& space c$
+    - $a space \& space a = a$
+    - $a space \& space 0 = 0$
+    - $a space \& space ~0 = a$
 === 按位异或 <chapter5.2.3>
 + $arrowhead.t$运算符，二元
 
 + 记$a_i,b_i$分别为$a,b$补码的第$i$位，$a arrowhead.t b$表示对每一组$a_i,b_i$做逻辑异或运算，例如$ & 10110011\ arrowhead.t space & 01101101\ = & overline(11011110) $
 + 基本性质 
-  - $a arrowhead.t b = b arrowhead.t a$
-  - $a arrowhead.t (b arrowhead.t c) = (a arrowhead.t b) arrowhead.t c$
-  - $a arrowhead.t a = 0$
-  - $a arrowhead.t 0 = a$
-  - $a arrowhead.t ~0 = ~a$
+    - $a arrowhead.t b = b arrowhead.t a$
+    - $a arrowhead.t (b arrowhead.t c) = (a arrowhead.t b) arrowhead.t c$
+    - $a arrowhead.t a = 0$
+    - $a arrowhead.t 0 = a$
+    - $a arrowhead.t ~0 = ~a$
 === 按位或
 + $|$运算符，二元
 
 + 记$a_i,b_i$分别为$a,b$补码的第$i$位，$a | b$表示对每一组$a_i,b_i$做逻辑或运算，例如$ & 10110011\ | & 01101101\ = & overline(11111111) $
 
 + 基本性质
-  - $a | b = b | a$
-  - $a | (b | c) = (a | b) | c$
-  - $a | a = a$
-  - $a | 0 = a$
-  - $a | ~0 = ~0$
+    - $a | b = b | a$
+    - $a | (b | c) = (a | b) | c$
+    - $a | a = a$
+    - $a | 0 = a$
+    - $a | ~0 = ~0$
 == 移位运算
 === 按位左移 <chapter5.3.1>
 + $<<$运算符，二元
 
 + $a << i$表示将$a$的补码整体左移$i$位，在右侧补$i$位$0$，并丢弃左侧超出位数范围的$i$位
   
-  例如，$00111011 << 4$表示将$8$位整数$00111011$左移$4$位，在右侧补$4$位$0$，并丢弃左侧超出$8$位的范围的$0011$，得到结果$cancel(0011)10110000$，即$10110000$
+    例如，$00111011 << 4$表示将$8$位整数$00111011$左移$4$位，在右侧补$4$位$0$，并丢弃左侧超出$8$位的范围的$0011$，得到结果$cancel(0011)10110000$，即$10110000$
 
 + $i$必须满足$0 <= i < a "的补码位数"$，否则行为未定义
 
@@ -116,7 +116,7 @@
 
 + $a >> i$表示将$a$的补码整体右移$i$位，如果$a >= 0$，则在左侧补$i$位$0$，如果$a < 0$，则在左侧补$i$位$1$，从而保持$a$的符号不变，并丢弃右侧超出位数范围的$i$位，这一右移规则称为算术右移
   
-  例如，$10111011 >> 4$表示将$8$位整数$10111011$右移$4$位，在左侧补$4$位$1$，并丢弃右侧超出$8$位范围的$1011$，得到结果$11111011cancel(1011)$，即$11111011$
+    例如，$10111011 >> 4$表示将$8$位整数$10111011$右移$4$位，在左侧补$4$位$1$，并丢弃右侧超出$8$位范围的$1011$，得到结果$11111011cancel(1011)$，即$11111011$
 
 + $i$必须满足$0 <= i < a "的补码位数"$，否则行为未定义
 
@@ -150,9 +150,9 @@ for (int i = bits - 1; i >= 0; --i) {
 === 提取$x$最低的$1$位 <chapter5.4.3>
 通过观察可以发现，$n - 1$表示将$n$的补码从最低的$1$位开始取反，例如
 $ 
-  000underline(10000) - 1 &= 000underline(01111)\ 
-  000000underline(10) - 1 &= 000000underline(01)\
-  0101underline(1000) - 1 &= 0101underline(0111) 
+    000underline(10000) - 1 &= 000underline(01111)\ 
+    000000underline(10) - 1 &= 000000underline(01)\
+    0101underline(1000) - 1 &= 0101underline(0111) 
 $也就是说，$-1$可以将形如$...underline(10...0)$的二进制数转换为形如$...underline(01...1)$的二进制数，那么反过来，$+1$可以实现从$...underline(01...1)$到$...underline(10...0)$的转换，这一性质与按位取反运算结合就可以实现部分取反，将取反操作截至最低的$1$位之前
 
 令$x := 11010underline(100)$，则$~x = 00101underline(011), space ~x + 1 = 00101underline(100)$，利用$x space \& space ~x + 1$即可以消去多余的高位，提取出最低的$1$位，得到$00000100$
@@ -177,23 +177,23 @@ int x1 = x & (x - 1);
 === 统计$x$补码中$1$的数量
 - 方法1
 
-  由(*_@chapter5.4.4[]_*) 可知，$x space \& space (x - 1)$可以删除$x$最低的$1$位，因此只要删除$x$中所有的$1$，并统计删除的次数，即可计算出$x$补码中$1$的数量
+    由(*_@chapter5.4.4[]_*) 可知，$x space \& space (x - 1)$可以删除$x$最低的$1$位，因此只要删除$x$中所有的$1$，并统计删除的次数，即可计算出$x$补码中$1$的数量
 
-  代码实现如下
-  ```cpp
-  int Popcount(int x) {
-      int cnt = 0;
-      while (x) {
-          x &= x - 1;
-          ++cnt;
-      }
-      return cnt;
-  }
-  ``` 
+    代码实现如下
+    ```cpp
+    int Popcount(int x) {
+        int cnt = 0;
+        while (x) {
+            x &= x - 1;
+            ++cnt;
+        }
+        return cnt;
+    }
+    ``` 
 
 - 方法2
   
-  从C++20开始，可使用标准库提供的#link("https://en.cppreference.com/w/cpp/numeric/popcount")[*_std::popcount_*]函数直接计算出结果
+    从C++20开始，可使用标准库提供的#link("https://en.cppreference.com/w/cpp/numeric/popcount")[*_std::popcount_*]函数直接计算出结果
 === 判断$x$是否为$2$的幂
 当$x <= 0$时，$x$显然不是$2$的幂，当$x > 0$时，如果$x$是$2$的幂，根据按位左移运算的性质(*_@chapter5.3.1[]_*)，$x$可以表示为$1 << i$的形式，即$x$的补码中只有一位是$1$，其余位都是$0$，因此，只需要考虑无符号整数$x$，并特判$x = 0$的情况，下列代码都保证$x$是无符号整数，或是满足$x >= 0$的有符号整数
 
@@ -241,104 +241,104 @@ int Abs(int x) {
 === 用位运算实现整数四则运算
 + 加法
   
-  通过观察可以发现，$a arrowhead.t b$的结果是$a,b$无进位加法的结果，而$a space \& space b$的结果是$a, b$加法的进位信息，例如
-  $ 
-    & 01001011 quad quad && 01001011\ 
-    arrowhead.t space & 00111010 quad quad \& space && 00111010\ 
-    = & overline(01110001) quad quad = && overline(00001010)
-  $
-  由于进位是需要加到更高位上的，还要将$a space \& space b$得到的进位信息左移$1$位处理
-  
-  只要存在进位，就说明加法还没有完成，如此，我们就得到了新的加数$a' := a arrowhead.t b, space b' := (a space \& space b) << 1$，将相同的规则应用在$a', b'$上，可以产生新的加数，重复执行这一过程，直到不需要再进位，即$(a space \& space b) << 1 = 0$
+    通过观察可以发现，$a arrowhead.t b$的结果是$a,b$无进位加法的结果，而$a space \& space b$的结果是$a, b$加法的进位信息，例如
+    $ 
+        & 01001011 quad quad && 01001011\ 
+        arrowhead.t space & 00111010 quad quad \& space && 00111010\ 
+        = & overline(01110001) quad quad = && overline(00001010)
+    $
+    由于进位是需要加到更高位上的，还要将$a space \& space b$得到的进位信息左移$1$位处理
+    
+    只要存在进位，就说明加法还没有完成，如此，我们就得到了新的加数$a' := a arrowhead.t b, space b' := (a space \& space b) << 1$，将相同的规则应用在$a', b'$上，可以产生新的加数，重复执行这一过程，直到不需要再进位，即$(a space \& space b) << 1 = 0$
 
-  代码实现如下
-  ```cpp
-  int Add(int a, int b) {
-      int sum = 0;
-      while (b) {
-          sum = a ^ b;
-          b = (a & b) << 1;
-          a = sum;
-      }
-      return a;
-  }
-  ```
-  注意返回值应当是$a$，而不是$"sum"$，当$b$初始值为$0$时，返回$"sum"$会得到错误结果
+    代码实现如下
+    ```cpp
+    int Add(int a, int b) {
+        int sum = 0;
+        while (b) {
+            sum = a ^ b;
+            b = (a & b) << 1;
+            a = sum;
+        }
+        return a;
+    }
+    ```
+    注意返回值应当是$a$，而不是$"sum"$，当$b$初始值为$0$时，返回$"sum"$会得到错误结果
 + 减法
 
-  根据$a - b = a + (-b)$和按位取反运算的性质(*_@chapter5.2.1[]_*)，减法可以转换为加法实现
+    根据$a - b = a + (-b)$和按位取反运算的性质(*_@chapter5.2.1[]_*)，减法可以转换为加法实现
 
-  代码实现如下
-  ```cpp
-  int Subtract(int a, int b) {
-      return Add(a, Add(~b, 1));
-  }
-  ```
+    代码实现如下
+    ```cpp
+    int Subtract(int a, int b) {
+        return Add(a, Add(~b, 1));
+    }
+    ```
 + 乘法
   
-  假设$a, b$均为$8$位无符号整数，$a = 11011011, b = 10110001$，则$a * b$的运算过程如下
+    假设$a, b$均为$8$位无符号整数，$a = 11011011, b = 10110001$，则$a * b$的运算过程如下
 
-  $#{let i = 0; while i < 34 {[$space.fig$]; i += 1;}} 11011011\
-  #{let i = 0; while i < 32 {[$space.fig$]; i += 1;}} * #h(3pt) 10110001\
-  #{let i = 0; while i < 34 {[$space.fig$]; i += 1;}} overline(11011011)\
-  #{let i = 0; while i < 33 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v \
-  #{let i = 0; while i < 32 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v #{let i = 0; while i < 1 {[$#h(3pt) dots.v$]; i += 1;}}\
-  #{let i = 0; while i < 31 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v #{let i = 0; while i < 2 {[$#h(3pt) dots.v$]; i += 1;}}\
-  #{let i = 0; while i < 30 {[$space.fig$]; i += 1;}} 11011011 #h(2pt) dots.v #{let i = 0; while i < 3 {[$#h(3pt) dots.v$]; i += 1;}}\
-  #{let i = 0; while i < 29 {[$space.fig$]; i += 1;}} 11011011 #h(2pt) dots.v #{let i = 0; while i < 4 {[$#h(3pt) dots.v$]; i += 1;}}\
-  #{let i = 0; while i < 28 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v #{let i = 0; while i < 5 {[$#h(3pt) dots.v$]; i += 1;}}\
-  #{let i = 0; while i < 27 {[$space.fig$]; i += 1;}} 11011011 #h(2pt) dots.v #{let i = 0; while i < 6 {[$#h(3pt) dots.v$]; i += 1;}}\
-  #{let i = 0; while i < 34 {[$space.fig$]; i += 1;}} overline(01101011) = (107)_10$
-  
-  从低位到高位，每次使用$b$的一位$b_i$与$a$整体相乘，得到一个部分积，如果$b_i$是$0$，则该部分积是$0$，如果$b_i$是$1$，则该部分积是$a$，之后将该部分积左移，使其末位与$b_i$对齐，右侧补$0$，如此得到所有的部分积后，将它们累加起来并丢弃超出范围的位，就得到了$a * b$的积
-  
-  可以看出，乘法的本质也是加法，可以利用移位运算将乘法转换为加法计算，每次得到部分积后，将$a$左移$1$位，将$b$右移$1$位，直到计算完所有的部分积，即$b = 0$
+    $#{let i = 0; while i < 34 {[$space.fig$]; i += 1;}} 11011011\
+    #{let i = 0; while i < 32 {[$space.fig$]; i += 1;}} * #h(3pt) 10110001\
+    #{let i = 0; while i < 34 {[$space.fig$]; i += 1;}} overline(11011011)\
+    #{let i = 0; while i < 33 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v \
+    #{let i = 0; while i < 32 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v #{let i = 0; while i < 1 {[$#h(3pt) dots.v$]; i += 1;}}\
+    #{let i = 0; while i < 31 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v #{let i = 0; while i < 2 {[$#h(3pt) dots.v$]; i += 1;}}\
+    #{let i = 0; while i < 30 {[$space.fig$]; i += 1;}} 11011011 #h(2pt) dots.v #{let i = 0; while i < 3 {[$#h(3pt) dots.v$]; i += 1;}}\
+    #{let i = 0; while i < 29 {[$space.fig$]; i += 1;}} 11011011 #h(2pt) dots.v #{let i = 0; while i < 4 {[$#h(3pt) dots.v$]; i += 1;}}\
+    #{let i = 0; while i < 28 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v #{let i = 0; while i < 5 {[$#h(3pt) dots.v$]; i += 1;}}\
+    #{let i = 0; while i < 27 {[$space.fig$]; i += 1;}} 11011011 #h(2pt) dots.v #{let i = 0; while i < 6 {[$#h(3pt) dots.v$]; i += 1;}}\
+    #{let i = 0; while i < 34 {[$space.fig$]; i += 1;}} overline(01101011) = (107)_10$
+    
+    从低位到高位，每次使用$b$的一位$b_i$与$a$整体相乘，得到一个部分积，如果$b_i$是$0$，则该部分积是$0$，如果$b_i$是$1$，则该部分积是$a$，之后将该部分积左移，使其末位与$b_i$对齐，右侧补$0$，如此得到所有的部分积后，将它们累加起来并丢弃超出范围的位，就得到了$a * b$的积
+    
+    可以看出，乘法的本质也是加法，可以利用移位运算将乘法转换为加法计算，每次得到部分积后，将$a$左移$1$位，将$b$右移$1$位，直到计算完所有的部分积，即$b = 0$
 
-  代码实现如下
-  ```cpp
-  int Multiply(int a, int b) {
-      int ans = 0;
-      while (b) {
-          if (b & 1) {
-              ans = Add(ans, a);
-          }
-          a <<= 1;
-          b >>= 1;
-      }
-      return ans;
-  }
-  ```
-  根据(*_@charpter3.4.2[]_*)，对负数执行按位右移运算会在左侧补$1$，因此该算法不支持$b < 0$的情况
-  
-  假设$a, b$都是$32$位有符号整数，加入符号处理后的代码实现如下
-  ```cpp
-  int Multiply(int a, int b) {
-      int bits = 32;
-      // 获取 a, b 的符号
-      int sign_a = a >> Add(bits, ~0);
-      int sign_b = b >> Add(bits, ~0);
-      // 取 a, b 的绝对值，原理见 (4.5.7)
-      a = Add(a ^ sign_a, Add(~sign_a, 1));
-      b = Add(b ^ sign_b, Add(~sign_b, 1));
-      int ans = 0;
-      while (b) {
-          if (b & 1) {
-              ans = Add(ans, a);
-          }
-          a <<= 1;
-          b >>= 1;
-      }
-      return sign_a ^ sign_b ? Add(~ans, 1) : ans;
-  }
-  ```
+    代码实现如下
+    ```cpp
+    int Multiply(int a, int b) {
+        int ans = 0;
+        while (b) {
+            if (b & 1) {
+                ans = Add(ans, a);
+            }
+            a <<= 1;
+            b >>= 1;
+        }
+        return ans;
+    }
+    ```
+    根据(*_@charpter3.4.2[]_*)，对负数执行按位右移运算会在左侧补$1$，因此该算法不支持$b < 0$的情况
+    
+    假设$a, b$都是$32$位有符号整数，加入符号处理后的代码实现如下
+    ```cpp
+    int Multiply(int a, int b) {
+        int bits = 32;
+        // 获取 a, b 的符号
+        int sign_a = a >> Add(bits, ~0);
+        int sign_b = b >> Add(bits, ~0);
+        // 取 a, b 的绝对值，原理见 (4.5.7)
+        a = Add(a ^ sign_a, Add(~sign_a, 1));
+        b = Add(b ^ sign_b, Add(~sign_b, 1));
+        int ans = 0;
+        while (b) {
+            if (b & 1) {
+                ans = Add(ans, a);
+            }
+            a <<= 1;
+            b >>= 1;
+        }
+        return sign_a ^ sign_b ? Add(~ans, 1) : ans;
+    }
+    ```
 + 除法
 
-  代码实现如下
-  ```cpp
-  int Divide(int a, int b) {
-      
-  }
-  ```
+    代码实现如下
+    ```cpp
+    int Divide(int a, int b) {
+        
+    }
+    ```
 = 指针与数组
 == 原始指针
 === 基本概念
@@ -347,15 +347,15 @@ int Abs(int x) {
 + 写法上，```cpp *``` 可以紧贴着```cpp T```写，即```cpp T*```
 
 + 指针的值
-  - 值为空指针常量，即```cpp nullptr```的指针称为空指针(_null pointer_)
+    - 值为空指针常量，即```cpp nullptr```的指针称为空指针(_null pointer_)
 
-  - 哨兵指针，也称为尾后指针
+    - 哨兵指针，也称为尾后指针
 
-  - 如果指针的值是...，野指针
+    - 如果指针的值是...，野指针
 
-  - 如果指针指向的对象所占用的内存被释放，但该指针依然指向这块内存，则称该指针为悬垂指针(_dangling pointer_)
+    - 如果指针指向的对象所占用的内存被释放，但该指针依然指向这块内存，则称该指针为悬垂指针(_dangling pointer_)
 
-  - 野指针，悬垂指针统称无效指针(_invalid pointer_)
+    - 野指针，悬垂指针统称无效指针(_invalid pointer_)
 + 通过指针获取其指向的对象的过程称为解引用，此过程需要用到间接寻址运算符```cpp *```，解引用空指针和无效指针是未定义行为
 
 + 类型为```cpp void *```的指针称为无类型指针，这样的指针仅用于保存地址，不指向任何对象，也不能被解引用
