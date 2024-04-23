@@ -490,7 +490,7 @@ void RemoveRZero(std::vector<int>& n) {
 
 + 除法
 
-    设$q'$为$a div b$的商，$|q|$为$|a| div |b|$的商，$r'$为$a div b$的余数，$|r|$为$|a| div |b|$的余数，其中$b != 0$
+    设$q'$为$a div b$的商，要求向$-oo$取整，$|q|$为$|a| div |b|$的商，$r'$为$a div b$的余数，$|r|$为$|a| div |b|$的余数，其中$b != 0$
     
     当$a >= 0 and b >= 0$或$a < 0 and b < 0$时，$|q'| = |q|, |r'| = |r|$，$q$的符号为正，$r$的符号与$b$相同
 
