@@ -225,110 +225,109 @@ int Abs(int x) {
 }
 ```
 === 用位运算实现整数四则运算
-+ 加法
-  
-    通过观察可以发现，$a arrowhead.t b$的结果是$a,b$无进位加法的结果，而$a space \& space b$的结果是$a, b$加法的进位信息，例如
-    $ 
-        & 01001011 quad quad && 01001011\ 
-        arrowhead.t space & 00111010 quad quad \& space && 00111010\ 
-        = & overline(01110001) quad quad = && overline(00001010)
-    $
-    由于进位是需要加到更高位上的，还要将$a space \& space b$得到的进位信息左移$1$位处理
-    
-    只要存在进位，就说明加法还没有完成，如此，我们就得到了新的加数$a' := a arrowhead.t b, space b' := (a space \& space b) << 1$，将相同的规则应用在$a', b'$上，可以产生新的加数，重复执行这一过程，直到不需要再进位，即$(a space \& space b) << 1 = 0$
+==== 加法
+通过观察可以发现，$a arrowhead.t b$的结果是$a,b$无进位加法的结果，而$a space \& space b$的结果是$a, b$加法的进位信息，例如
+$ 
+    & 01001011 quad quad && 01001011\ 
+    arrowhead.t space & 00111010 quad quad \& space && 00111010\ 
+    = & overline(01110001) quad quad = && overline(00001010)
+$
+由于进位是需要加到更高位上的，还要将$a space \& space b$得到的进位信息左移$1$位处理
 
-    代码实现如下
-    ```cpp
-    int Add(int a, int b) {
-        int sum = 0;
-        while (b) {
-            sum = a ^ b;
-            b = (a & b) << 1;
-            a = sum;
+只要存在进位，就说明加法还没有完成，如此，我们就得到了新的加数$a' := a arrowhead.t b, space b' := (a space \& space b) << 1$，将相同的规则应用在$a', b'$上，可以产生新的加数，重复执行这一过程，直到不需要再进位，即$(a space \& space b) << 1 = 0$
+
+代码实现如下
+```cpp
+int Add(int a, int b) {
+    int sum = 0;
+    while (b) {
+        sum = a ^ b;
+        b = (a & b) << 1;
+        a = sum;
+    }
+    return a;
+}
+```
+注意返回值应当是$a$，而不是$s u m$，当$b$初始值为$0$时，返回$s u m$会得到错误结果
+==== 减法
+根据$a - b = a + (-b)$和按位取反运算的性质(*_@chapter5.2.1[]_*)，减法可以转换为加法实现
+
+代码实现如下
+```cpp
+int Subtract(int a, int b) {
+    return Add(a, Add(~b, 1));
+}
+```
+==== 乘法 <位运算实现乘法>
+假设$a, b$均为$8$位无符号整数，$a = 11011011, b = 10110001$，则$a * b$的运算过程如下
+
+$#{let i = 0; while i < 34 {[$space.fig$]; i += 1;}} 11011011\
+#{let i = 0; while i < 32 {[$space.fig$]; i += 1;}} * #h(3pt) 10110001\
+#{let i = 0; while i < 34 {[$space.fig$]; i += 1;}} overline(11011011)\
+#{let i = 0; while i < 33 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v \
+#{let i = 0; while i < 32 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v #{let i = 0; while i < 1 {[$#h(3pt) dots.v$]; i += 1;}}\
+#{let i = 0; while i < 31 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v #{let i = 0; while i < 2 {[$#h(3pt) dots.v$]; i += 1;}}\
+#{let i = 0; while i < 30 {[$space.fig$]; i += 1;}} 11011011 #h(2pt) dots.v #{let i = 0; while i < 3 {[$#h(3pt) dots.v$]; i += 1;}}\
+#{let i = 0; while i < 29 {[$space.fig$]; i += 1;}} 11011011 #h(2pt) dots.v #{let i = 0; while i < 4 {[$#h(3pt) dots.v$]; i += 1;}}\
+#{let i = 0; while i < 28 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v #{let i = 0; while i < 5 {[$#h(3pt) dots.v$]; i += 1;}}\
+#{let i = 0; while i < 27 {[$space.fig$]; i += 1;}} 11011011 #h(2pt) dots.v #{let i = 0; while i < 6 {[$#h(3pt) dots.v$]; i += 1;}}\
+#{let i = 0; while i < 34 {[$space.fig$]; i += 1;}} overline(01101011) = (107)_10$
+
+从低位到高位，每次使用$b$的一位$b_i$与$a$整体相乘，得到一个部分积，如果$b_i$是$0$，则该部分积是$0$，如果$b_i$是$1$，则该部分积是$a$，之后将该部分积左移$i$位，并在右侧补$i$位$0$，如此得到所有的部分积后，将它们累加起来并丢弃超出范围的位，就得到了$a * b$的积
+
+可以看出，乘法的本质也是加法，利用移位运算将乘法转换为加法计算，每次得到部分积后，将$a$左移$1$位，将$b$右移$1$位，直到所有$b_i$都参与计算，此时$b = 0$
+
+由(*_@按位右移[]_*)，可知，对负数执行按位右移运算会在左侧补$1$，即当$b < 0$时，无法形成循环终止条件$b = 0$，因此，在右移之后还需要将最高位设置为$0$
+
+代码实现如下
+```cpp
+int Multiply(int a, int b) {
+    int ans = 0, mask = -1;
+    while (b) {
+        if (b & 1) {
+            ans = Add(ans, a);
         }
-        return a;
+        a <<= 1;
+        b >>= 1;
     }
-    ```
-    注意返回值应当是$a$，而不是$s u m$，当$b$初始值为$0$时，返回$s u m$会得到错误结果
+    return ans;
+}
+```
 
-+ 减法
+由(*_@按位右移[]_*)，可知，对负数执行按位右移运算会在左侧补$1$，无法形成循环终止条件$b = 0$，因此上述代码不支持$b < 0$的情况，为了解决这个问题，我们需要先计算$|a| * |b|$，再确定积的符号，当$a, b$同号时，积为正，当$a, b$异号时，积为负，并且因为$-0 = 0$，所以$a, b$一个为负一个为$0$的情况不需要单独讨论
 
-    根据$a - b = a + (-b)$和按位取反运算的性质(*_@chapter5.2.1[]_*)，减法可以转换为加法实现
-
-    代码实现如下
-    ```cpp
-    int Subtract(int a, int b) {
-        return Add(a, Add(~b, 1));
-    }
-    ```
-
-+ 乘法
-  
-    假设$a, b$均为$8$位无符号整数，$a = 11011011, b = 10110001$，则$a * b$的运算过程如下
-
-    $#{let i = 0; while i < 34 {[$space.fig$]; i += 1;}} 11011011\
-    #{let i = 0; while i < 32 {[$space.fig$]; i += 1;}} * #h(3pt) 10110001\
-    #{let i = 0; while i < 34 {[$space.fig$]; i += 1;}} overline(11011011)\
-    #{let i = 0; while i < 33 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v \
-    #{let i = 0; while i < 32 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v #{let i = 0; while i < 1 {[$#h(3pt) dots.v$]; i += 1;}}\
-    #{let i = 0; while i < 31 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v #{let i = 0; while i < 2 {[$#h(3pt) dots.v$]; i += 1;}}\
-    #{let i = 0; while i < 30 {[$space.fig$]; i += 1;}} 11011011 #h(2pt) dots.v #{let i = 0; while i < 3 {[$#h(3pt) dots.v$]; i += 1;}}\
-    #{let i = 0; while i < 29 {[$space.fig$]; i += 1;}} 11011011 #h(2pt) dots.v #{let i = 0; while i < 4 {[$#h(3pt) dots.v$]; i += 1;}}\
-    #{let i = 0; while i < 28 {[$space.fig$]; i += 1;}} 00000000 #h(2pt) dots.v #{let i = 0; while i < 5 {[$#h(3pt) dots.v$]; i += 1;}}\
-    #{let i = 0; while i < 27 {[$space.fig$]; i += 1;}} 11011011 #h(2pt) dots.v #{let i = 0; while i < 6 {[$#h(3pt) dots.v$]; i += 1;}}\
-    #{let i = 0; while i < 34 {[$space.fig$]; i += 1;}} overline(01101011) = (107)_10$
-    
-    从低位到高位，每次使用$b$的一位$b_i$与$a$整体相乘，得到一个部分积，如果$b_i$是$0$，则该部分积是$0$，如果$b_i$是$1$，则该部分积是$a$，之后将该部分积左移$i$位，并在右侧补$i$位$0$，如此得到所有的部分积后，将它们累加起来并丢弃超出范围的位，就得到了$a * b$的积
-    
-    可以看出，乘法的本质也是加法，利用移位运算将乘法转换为加法计算，每次得到部分积后，将$a$左移$1$位，将$b$右移$1$位，直到所有$b_i$都参与计算，此时$b = 0$
-
-    代码实现如下
-    ```cpp
-    int Multiply(int a, int b) {
-        int ans = 0;
-        while (b) {
-            if (b & 1) {
-                ans = Add(ans, a);
-            }
-            a <<= 1;
-            b >>= 1;
+假设$a, b$都是$32$位有符号整数，加入符号处理后的代码实现如下
+```cpp
+int Multiply(int a, int b) {
+    int bits = sizeof a * 8;
+    // 获取 a, b 的符号
+    int sign_a = a >> Add(bits, ~0);
+    int sign_b = b >> Add(bits, ~0);
+    // 取 a, b 的绝对值，原理见 (4.5.7)
+    a = Add(a ^ sign_a, Add(~sign_a, 1));
+    b = Add(b ^ sign_b, Add(~sign_b, 1));
+    int ans = 0;
+    while (b) {
+        if (b & 1) {
+            ans = Add(ans, a);
         }
-        return ans;
+        a <<= 1;
+        b >>= 1;
     }
-    ```
+    return sign_a ^ sign_b ? Add(~ans, 1) : ans;
+}
+```
+==== 除法
+以(*_@位运算实现乘法[]_*)中的$a = 11011011, b = 10110001, c = 01101011$为例，$a * b = c$，假设现在已知$a, c$，需要求出$b$，则$b = c div a$
 
-    由(*_@按位右移[]_*)，可知，对负数执行按位右移运算会在左侧补$1$，无法形成循环终止条件$b = 0$，因此上述代码不支持$b < 0$的情况，为了解决这个问题，我们需要先计算$|a| * |b|$，再确定积的符号，当$a, b$同号时，积为正，当$a, b$异号时，积为负，并且因为$-0 = 0$，所以$a, b$一个为负一个为$0$的情况不需要单独讨论
-    
-    假设$a, b$都是$32$位有符号整数，加入符号处理后的代码实现如下
-    ```cpp
-    int Multiply(int a, int b) {
-        int bits = sizeof a * 8;
-        // 获取 a, b 的符号
-        int sign_a = a >> Add(bits, ~0);
-        int sign_b = b >> Add(bits, ~0);
-        // 取 a, b 的绝对值，原理见 (4.5.7)
-        a = Add(a ^ sign_a, Add(~sign_a, 1));
-        b = Add(b ^ sign_b, Add(~sign_b, 1));
-        int ans = 0;
-        while (b) {
-            if (b & 1) {
-                ans = Add(ans, a);
-            }
-            a <<= 1;
-            b >>= 1;
-        }
-        return sign_a ^ sign_b ? Add(~ans, 1) : ans;
-    }
-    ```
+除法是乘法的逆运算，
 
-+ 除法
+代码实现如下
+```cpp
+int Divide(int a, int b) {
     
-    代码实现如下
-    ```cpp
-    int Divide(int a, int b) {
-        
-    }
-    ```
+}
+```
 = 指针与数组
 == 原始指针
 === 基本概念
