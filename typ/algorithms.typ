@@ -1,4 +1,4 @@
-#set text(font: ("Linux Libertine", "Noto Sans SC"), size: 11pt)
+#set text(font: ("Linux Libertine", "Noto Sans SC"), size: 12.5pt)
 
 #show raw: set text(font: ("Fira Code", "Noto Sans SC"), features: (calt: 0), lang: "cpp")
 
