@@ -167,6 +167,23 @@ std::binary_search(begin, end, x)：
 递归可以与循环互相转换，通常来说，使用递归的代码相较于循环具有良好的可读性，但会增加算法的时间和空间复杂度
 
 若函数的递归调用只出现在最后，则该类型的递归称为尾递归
+==== 经典例题——汉诺塔问题
+移动盘子
+```cpp
+using State = std::map<char, std::vector<int>>; 
+// 无视规则，将 n 个盘子从 from 柱移动到 to 柱上
+State MoveDisks(State s, int n, char from, char to) {
+    std::vector<int> temp(n);
+    for (int i = 0; i < n; ++i) {
+        temp[i] = s[from].back();
+        s[from].pop_back();
+    }
+    for (int i = n - 1; i >= 0; --i) {
+        s[to].push_back(temp[i]);
+    }
+    return s;
+}
+```
 === 搜索
 利用递归进行的枚举称为搜索，相较于利用循环枚举来说，递归枚举具有代码简洁、适用范围广的优势，在使用循环枚举时我们需要明确知道具体的解，而搜索时只需要知道解的初始情况和最终情况，中间的所有解都会由递归函数自动生成
 
