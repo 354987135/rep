@@ -1,4 +1,4 @@
-#set text(font: ("Linux Libertine", "Noto Sans SC"), size: 12pt)
+#set text(font: ("Linux Libertine", "Noto Sans SC"), size: 11pt)
 
 #show raw: set text(font: ("Fira Code", "Noto Sans SC"), features: (calt: 0), lang: "cpp")
 
@@ -1046,7 +1046,7 @@ $ p_i = sum_(k = 1)^(i)a_k $
 
 显然，计算```cpp p[i] ```的递推公式为```cpp p[i] = p[i - 1] + a[i] ```
 
-由一维前缀和的定义可得区间$[l, r]$的和
+由一维前缀和的定义可得区间$[l, r]$内的和
 
 $ S = sum_(k = l)^(r)a_k = p_r - p_(l - 1) $
 
@@ -1056,7 +1056,7 @@ $ S = sum_(k = l)^(r)a_k = p_r - p_(l - 1) $
 
 由图1可知，计算```cpp p[i][j] ```的递推公式为```cpp p[i][j] = p[i][j - 1] + p[i - 1][j] - p[i - 1][j - 1] + a[i][j] ```
 
-由图2可知，由点$(x_1, y_1), (x_2, y_2)$围成的长方形范围的和
+由图2可知，由点$(x_1, y_1), (x_2, y_2)$围成的长方形范围内的和
 
 $ S = sum_(k_1 = x_1)^(x_2)sum_(k_2 = y_1)^(y_2)a_(k_1 k_2) = p_(x_2 y_2) - p_(x_1 y_2) - p_(x_2 y_1) + p_(x_1 y_1) $
 
@@ -1079,4 +1079,10 @@ $ sum_(k = 1)^i d_i = a_1 + (a_2 - a_1) + (a_3 - a_2) + ... + (a_i - a_(i - 1)) 
 若```cpp a ```为二维数组，由二维前缀和递推式可得，二维差分数组```cpp d ```中```cpp d[i][j] ```定义为
 
 $ d_(i j) = a_(i j) - a_(i j - 1) - a_(i - 1 j) + a_(i - 1 j - 1) $
-和一维差分一样，对数组```cpp d ```做前缀和，可以得到原数组```cpp a```
+和一维差分一样，对数组```cpp d ```做前缀和，可以得到原数组```cpp a```，即
+
+$ sum_(k_1 = 1)^(i)sum_(k_2 = 1)^(j)d_(k_1 k_2) = a_(i j) $
+
+此处省略展开计算证明的过程
+
+如图3所示，如果要在点$(x_1, y_1), (x_2, y_2)$围成的长方形范围内整体加常数$C$，那么
