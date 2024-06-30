@@ -106,51 +106,6 @@ T(n)
 \end{align*}
 $$
 当 $n=1$ 时，$T(1)=1$ 也满足此式，最后可以得到汉诺塔递归算法的时间复杂度 $T(n) = O(2^n)$
-== 二分法
-```cpp
-std::vector<int> v {1, 2, 3, 4, 5, 6};
-// type 1
-int l = 0, r = v.size() - 1, val = 3;
-while (l <= r) {
-    int mid = (r - l) / 2 + l;
-    if (v[mid] == val) {
-        std::cout << mid << '\n';
-    } else if (v[mid] > val) {
-        r = mid - 1;
-    } else {
-        l = mid + 1;
-    }
-}
-// type 2
-int ans = 0, val = 3;
-for (int step = v.size() / 2; step >= 1; step /= 2) {
-    while (ans + step < v.size() && v[ans + step] <= val) {
-        ans += step;
-    }
-    if (v[ans] == val) {
-        std::cout << ans << '\n';
-    } else {
-        std::cout << "no ans\n";
-    }
-}
-```
-=== stl中的二分查找函数
-定义在<algorithm>头文件中
-
-std::lower_bound(begin, end, x)：
-在以begin和end迭代器标识的有序（按 < 关系有序）range中，寻找第一个不先序于x（即 >= x）的元素，返回该元素的迭代器
-
-std::upper_bound(begin, end, x)：
-在以begin和end迭代器标识的有序（按 < 关系有序）range中，寻找第一个先序于x（即 > x）的元素，返回指向该元素的迭代器
-
-以上 2 个函数，如果未找到目标元素，则返回传入的 end 迭代器
-
-std::equal_range(begin, end, x)：
-同时进行std::lower_bound(begin, end, x) 和 std::upper_bound(begin, end, x)，以pair形式返回结果，其中first成员是std::lower_bound(begin, end, x)的返回值，second成员是std::upper_bound(begin, end, x)的返回值
-second - first 可以得到等于 x 的元素的个数
-
-std::binary_search(begin, end, x)：
-在以begin和end迭代器标识的有序（按 < 关系有序）range中，查找是否存在x，返回bool值
 == 蛮力法
 即使用循环语句暴力枚举并验证所有可能的解
 == 模拟 (Implementation)
