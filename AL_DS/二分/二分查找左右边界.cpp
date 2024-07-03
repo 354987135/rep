@@ -2,6 +2,7 @@
 using namespace std;
 
 int SearchL1(double x, const vector<int>& a) {
+    // >= x的第一个数的下标
     int l = 0, r = a.size() - 1;
     while (l <= r) {
         int mid = (l + r) / 2;
@@ -12,6 +13,8 @@ int SearchL1(double x, const vector<int>& a) {
         }
     }           
     return l;
+ // 这个下标位置不一定是x，但是如果有x，就是x的下标
+ // 要在主函数里判断
 }
 
 int SearchL2(double x, const vector<int>& a) {
@@ -72,16 +75,16 @@ int main() {
         // int pos = upper_bound(a.begin(), a.end(), x) - a.begin();
         // int pos = SearchL2(x, a);
         // int pos = SearchR2(x, a);
-        // int posL = SearchL1(x, a);
-        // int posR = SearchR1(x, a);
-        int posL = lower_bound(a.begin(), a.end(), x) - a.begin();
-        int posR = upper_bound(a.begin(), a.end(), x) - a.begin();
-        if (posL < a.size() && a[posL] == x) {
+        int posL = SearchL1(x, a);
+        int posR = SearchR1(x, a);
+        // int posL = lower_bound(a.begin(), a.end(), x) - a.begin();
+        // int posR = upper_bound(a.begin(), a.end(), x) - a.begin();
+        if (posL < a.size() && a[posL] == x) { // >= 的第一个数
             cout << posL + 1 << ' ';
         } else {
             cout << -1 << ' ';
         }
-        if (0 <= posR - 1 && posR - 1 < a.size() && a[posR - 1] == x) {
+        if (0 <= posR - 1 && posR - 1 < a.size() && a[posR - 1] == x) { // >的第一个数
             cout << posR << '\n'; // upper bound 最后 l 会比目标下标大 1
         } else {
             cout << -1 << '\n';
