@@ -73,7 +73,7 @@ int main() {
 
     std::vector<Student> students {
         {
-            "支娄媛", 
+            "XXX", 
             {
                 Question::Select,
                 {
