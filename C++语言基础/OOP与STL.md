@@ -13,4 +13,10 @@ std::advance, std::distance, std::begin, std::end
 std::greater<int>() 降序排列的简便写法
 
 reverse() fill()
-STL算法库函数（min, max, swap, sort--如何自定义排序规则，lower_bound(), upper_bound()）、、STL容器(std::string, std::vector(为什么不推荐使用内置数组？不含有长度信息，不能相互复制，传参不方便), std::pair, std::set, std::map及其unordered版本)、文件类型的概念(文本文件)，文件读写(fstream)，文件重定向(freopen("txt.out", 'w', stdout)...)，
+STL算法库函数（min, max, swap, sort--如何自定义排序规则，lower_bound(), upper_bound()）、
+
+
+STL容器(std::string, std::vector(为什么不推荐使用内置数组？不含有长度信息，不能相互复制，传参不方便), std::pair, std::set, std::map及其unordered版本)、
+
+
+文件类型的概念(文本文件)，文件读写(fstream)，文件重定向(freopen("txt.out", 'w', stdout)...)，
