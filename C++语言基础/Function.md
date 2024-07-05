@@ -19,9 +19,6 @@ auto，decltype(auto)
 #include <iostream>
 #include <algorithm>
 
-bool compare(int a, int b) { return a > b; }
-//定义降序排序函数
-
 int* create_arr(int len) {
     int* p = new int[len];
     for (int i = 0; i < len; i++) {
