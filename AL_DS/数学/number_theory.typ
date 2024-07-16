@@ -16,4 +16,10 @@
 #show math.equation.where(block: false): it => spacing + it + spacing
 
 == 整除
-如果$a, b in ZZ,$
+设$a, b in ZZ$，如果存在$k in ZZ$，使得$b = k a$，则称 $a$ 整除 $b$，记为$a | b$
+== 整除的性质
+
+== 因数 约数 素数
+== 算术基本定理
+== 素数判定 试除法
+== 素数筛法
