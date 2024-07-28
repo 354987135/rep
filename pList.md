@@ -7,6 +7,8 @@
 素数筛法求素数个数
 ### 动态规划
 一维线性DP
+- [洛谷 B3635 硬币问题](https://www.luogu.com.cn/problem/B3635)
+- [洛谷 B3637 最长上升子序列](https://www.luogu.com.cn/problem/B3637)
 - [1408 大盗阿福](http://101.33.249.58/problem.php?id=1408)
 二维线性DP
 - [洛谷 P1002 过河卒](https://www.luogu.com.cn/problem/P1002)
