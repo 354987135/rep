@@ -130,7 +130,7 @@ STL中常用容器，vector, string, bitset, pair, (unordered)set, (unordered)ma
 # 动态规划
 ## 线性DP
 ### 一维线性DP
-1408,1388
+1311,1408,1388
 ### 二维线性DP
 1365,1421
 ### 0-1背包DP
