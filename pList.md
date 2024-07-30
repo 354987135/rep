@@ -8,6 +8,8 @@
 #### 一维线性DP
 - [洛谷 B3635 硬币问题](https://www.luogu.com.cn/problem/B3635)
 - [洛谷 B3637 最长上升子序列](https://www.luogu.com.cn/problem/B3637)
+- [洛谷 P1158 [NOIP2010 普及组] 导弹拦截](https://www.luogu.com.cn/problem/P1020)
+- [洛谷 P1970 [NOIP2013 提高组] 花匠](https://www.luogu.com.cn/problem/P1970)
 #### 二维线性DP
 - [洛谷 P1216 [USACO1.5] [IOI1994]数字三角形 Number Triangles](https://www.luogu.com.cn/problem/P1216)
 - [洛谷 P1002 过河卒](https://www.luogu.com.cn/problem/P1002)
