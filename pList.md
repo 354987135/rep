@@ -13,5 +13,9 @@
 #### 二维线性DP
 - [洛谷 P1216 [USACO1.5] [IOI1994]数字三角形 Number Triangles](https://www.luogu.com.cn/problem/P1216)
 - [洛谷 P1002 过河卒](https://www.luogu.com.cn/problem/P1002)
-#### 0-1背包问题
+##### 0-1背包问题
 - [洛谷 P1048 [NOIP2005 普及组] 采药](https://www.luogu.com.cn/problem/P1048)
+##### 完全背包问题
+- [洛谷 P1616 疯狂的采药](https://www.luogu.com.cn/problem/P1616)
+##### 分组背包问题
+- [洛谷 P1757 通天之分组背包](https://www.luogu.com.cn/problem/P1757)
