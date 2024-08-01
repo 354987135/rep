@@ -115,6 +115,8 @@ STL中常用容器，vector, string, bitset, pair, (unordered)set, (unordered)ma
 1469,3417
 ## 建图并求路径长度（DFS、BFS均可）
 1468
+# 栈
+1464,3035
 # 链表
 ## 单链表的插入
 3376
@@ -132,7 +134,7 @@ STL中常用容器，vector, string, bitset, pair, (unordered)set, (unordered)ma
 ### 一维线性DP
 1311,1408,1388,1367
 ### 二维线性DP
-1365,3324,1421
+1365,3324,1421,1372
 ### 0-1背包DP
 1374,1397
 ### 完全背包DP

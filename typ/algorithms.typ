@@ -460,6 +460,57 @@ void RemoveRZero(std::vector<int>& n) {
 
     该优化也就是所谓的“高精度乘低精度”，可以使乘法的时间复杂度降低到$O(n)$，其中$n$是大整数的位数
     
+
+    ```cpp
+    // 求10000! 
+    // 可以考虑的优化：多做几次乘法再进位
+    // 延迟进位不影响最终结果，但要考虑溢出问题
+    // 取最大可能的数位9与最大的数进行相乘
+    // 9*9997*9998 = 899550054 < INT32_MAX
+    // 9*9997*9998*9999 = 8994600989946 > UINT32_MAX
+    // 使用32位整数只能保证至多2次乘法不溢出
+    // 9*9997*9998*9999*10000 = 89946009899460000 < INT64_MAX
+    // 9*9996*9997*9998*9999*10000 = 899100314955002160000 > UINT64_MAX
+    // 使用64位整数只能保证至多4次乘法不溢出
+
+    #include <bits/stdc++.h>
+    using namespace std;
+
+    void Carry(vector<int64_t>& a, int len) {
+        int64_t carry = 0;
+        for (int i = 0; i < len; ++i) {
+            a[i] += carry;
+            carry = a[i] / 10;
+            a[i] %= 10;
+        }
+    }
+
+    int main() {
+        ios::sync_with_stdio(false);
+        cin.tie(nullptr);
+        
+        int n;
+        cin >> n;
+        vector<int64_t> ans(40000);
+        ans[0] = 1; 
+        int len = 1, cnt = 0; 
+        for (int b = 2; b <= n; ++b) {
+            len += (int)log10(b) + 1;
+            for (int i = 0; i < len; ++i) {
+                ans[i] *= b;
+            }
+            ++cnt;
+            if (cnt == 4) { 
+                Carry(ans, len);
+                cnt = 0;
+            }
+        }
+        Carry(ans, len);
+        while (ans[len - 1] == 0) { --len; }
+        for (int i = len - 1; i >= 0; --i) { cout << ans[i]; }
+    }
+    ```
+
     代码实现如下
     ```cpp
     std::vector<int> Multiply(const std::vector<int>& a, int b) {
