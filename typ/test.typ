@@ -10,7 +10,7 @@
   radius: 2pt
 )
 
-#show heading.where(): set heading(numbering: "1.")
+#show heading.where(): set heading(numbering: "1.1")
 
 #let spacing = h(0.25em, weak: true)
 #show math.equation.where(block: false): it => spacing + it + spacing
@@ -33,6 +33,9 @@
 #codly.codly(
   stroke: 1pt + gradient.linear(..color.map.flare),
 )
+
+= 测试
+== 测试
 
 ```cpp
 #include <iostream>
