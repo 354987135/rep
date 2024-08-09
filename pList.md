@@ -39,6 +39,7 @@
 - [B3637 最长上升子序列](https://www.luogu.com.cn/problem/B3637)
 - [P1158 [NOIP2010 普及组] 导弹拦截](https://www.luogu.com.cn/problem/P1020)
 - [P1970 [NOIP2013 提高组] 花匠](https://www.luogu.com.cn/problem/P1970)
+- [Humble Numbers](https://vjudge.net/problem/HDU-1058)
 #### 二维线性DP
 - [P1216 [USACO1.5] [IOI1994]数字三角形 Number Triangles](https://www.luogu.com.cn/problem/P1216)
 - [P1002 过河卒](https://www.luogu.com.cn/problem/P1002)
